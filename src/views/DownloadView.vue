@@ -24,10 +24,33 @@ onMounted(async () => {
 function downloadImage() {
   if (!store.finalImage) return
   
-  const link = document.createElement('a')
-  link.href = store.finalImage
-  link.download = `dame-snap-${Date.now()}.png`
-  link.click()
+  try {
+    // Convert base64 to Blob to prevent mobile browser crashing from massive data URIs on anchors
+    const byteString = atob(store.finalImage.split(',')[1])
+    const mimeString = store.finalImage.split(',')[0].split(':')[1].split(';')[0]
+    const ab = new ArrayBuffer(byteString.length)
+    const ia = new Uint8Array(ab)
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+    }
+    const blob = new Blob([ab], { type: mimeString })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `dame-snap-${Date.now()}.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    // Clean up
+    setTimeout(() => {
+       URL.revokeObjectURL(url)
+    }, 1000)
+  } catch (err) {
+    console.error('Download failed:', err)
+    alert('Maaf, memori perangkat tidak cukup untuk mengunduh. Coba gunakan fitur Bagikan/Share.')
+  }
 }
 
 async function shareImage() {

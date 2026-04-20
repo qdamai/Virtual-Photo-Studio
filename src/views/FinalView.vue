@@ -36,9 +36,9 @@ async function generateFinal() {
   isGenerating.value = true
   
   try {
-    // We render at high scale for Ultra-HD quality
+    // We render at high scale for Ultra-HD quality, but capped at 2 to prevent mobile memory crashes
     const canvas = await html2canvas(frameRef.value.$el, {
-      scale: 3, 
+      scale: 2, 
       backgroundColor: null,
       useCORS: true,
       logging: false,
