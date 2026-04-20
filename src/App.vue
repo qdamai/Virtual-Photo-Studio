@@ -49,60 +49,64 @@ const currentStepIndex = computed(() => {
     />
 
     <!-- Header / Logo -->
-    <header class="fixed top-0 left-0 w-full p-1.5 md:p-5 flex flex-col md:flex-row justify-between items-center gap-1 md:gap-4 z-50">
-      <div class="flex flex-wrap items-center justify-center gap-2 md:gap-4 w-full md:w-auto">
-        <div 
-          class="flex items-center gap-2 cursor-pointer group"
-          @click="store.reset(); router.push('/')"
-        >
-          <div class="w-7 h-7 md:w-10 md:h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-6 md:h-6">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-              <circle cx="12" cy="13" r="4"></circle>
-            </svg>
+    <!-- Header / Logo -->
+    <header class="fixed top-0 left-0 w-full px-4 py-3 md:px-6 md:py-5 flex flex-row justify-between items-center z-50">
+      <!-- Logo Container -->
+      <div 
+        class="flex items-center gap-3 cursor-pointer group shrink-0"
+        @click="store.reset(); router.push('/')"
+      >
+        <div class="w-8 h-8 md:w-10 md:h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform shrink-0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-6 md:h-6">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+        <span class="hidden md:inline text-base md:text-xl font-bold tracking-tight">Dame-Snap</span>
+      </div>
+
+      <!-- Right Side Controls (Switchers & Progress) -->
+      <div class="flex items-center gap-3 md:gap-6 shrink-0">
+        <!-- Compact Controls Container -->
+        <div class="flex items-center gap-2">
+          <!-- Language Switcher -->
+          <div class="flex gap-1 p-1 bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+             <button 
+               v-for="lang in ['id', 'en']" 
+               :key="lang"
+               @click="store.locale = lang"
+               class="w-6 h-6 md:w-8 md:h-8 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center shrink-0"
+               :class="store.locale === lang ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-md' : 'text-slate-500 opacity-60 hover:opacity-100'"
+             >
+               {{ lang }}
+             </button>
           </div>
-          <span class="hidden md:inline text-base md:text-xl font-bold tracking-tight">Dame-Snap</span>
+
+          <!-- Theme Switcher -->
+          <div class="flex gap-1 p-1 bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+             <button 
+               v-for="[theme, icon] in [['playful', 'sparkles'], ['light', 'sun'], ['dark', 'moon']]"
+               :key="theme"
+               @click="store.appTheme = theme"
+               class="w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300 active:scale-90"
+               :class="store.appTheme === theme ? 'bg-primary text-white shadow-md' : 'text-slate-400 opacity-60 hover:opacity-100'"
+             >
+               <Sparkles v-if="theme === 'playful'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
+               <Sun      v-else-if="theme === 'light'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
+               <Moon     v-else                        class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
+             </button>
+          </div>
         </div>
 
-      <!-- Sleek compact controls pill -->
-      <div class="flex items-center gap-1 p-1 bg-black/5 dark:bg-white/10 backdrop-blur-3xl rounded-2xl border border-white/20 shadow-xl self-center md:self-auto">
-        <!-- Language Switcher - compact squared buttons -->
-        <div class="flex gap-0.5 pr-1.5 border-r border-white/20">
-           <button 
-             v-for="lang in ['id', 'en']" 
-             :key="lang"
-             @click="store.locale = lang"
-             class="w-8 h-8 md:w-9 md:h-9 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center relative overflow-hidden"
-             :class="store.locale === lang ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-md' : 'text-slate-500 opacity-50 hover:opacity-80'"
-           >
-             {{ lang }}
-           </button>
-        </div>
-
-        <!-- Theme Switcher — flat segmented control -->
-        <div class="flex items-center gap-0.5 pl-0.5">
-           <button 
-             v-for="[theme, icon] in [['playful', 'sparkles'], ['light', 'sun'], ['dark', 'moon']]"
-             :key="theme"
-             @click="store.appTheme = theme"
-             class="w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center relative z-10 transition-all duration-300 active:scale-90"
-             :class="store.appTheme === theme ? 'bg-primary text-white shadow-md' : 'text-slate-400 opacity-50 hover:opacity-80'"
-           >
-             <Sparkles v-if="theme === 'playful'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
-             <Sun      v-else-if="theme === 'light'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
-             <Moon     v-else                        class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
-           </button>
-        </div>
-      </div>
-      </div>
-      
-      <div v-if="showNavigation" class="hidden md:flex flex-col items-end">
-        <span class="text-xs uppercase tracking-widest opacity-40 font-semibold mb-1">Progress</span>
-        <div class="w-32 h-1.5 bg-slate-200/50 rounded-full overflow-hidden">
-          <div 
-            class="h-full bg-primary transition-all duration-500 ease-out"
-            :style="{ width: `${(currentStepIndex / store.totalSteps) * 100}%` }"
-          ></div>
+        <!-- Progress Bar (Desktop Only) -->
+        <div v-if="showNavigation" class="hidden lg:flex flex-col items-end">
+          <span class="text-xs uppercase tracking-widest opacity-40 font-semibold mb-1">Progress</span>
+          <div class="w-32 h-1.5 bg-slate-200/50 rounded-full overflow-hidden">
+            <div 
+              class="h-full bg-primary transition-all duration-500 ease-out"
+              :style="{ width: `${(currentStepIndex / store.totalSteps) * 100}%` }"
+            ></div>
+          </div>
         </div>
       </div>
     </header>
