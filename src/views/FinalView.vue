@@ -41,9 +41,9 @@ async function generateFinal() {
       allowTaint: true,
       onclone: (clonedDoc) => {
         // Find the cloned frame container and force natural scale for correct capture
-        const clonedContainer = clonedDoc.querySelector('.group\\/mockup div[class*="scale-"]')
+        const clonedContainer = clonedDoc.getElementById('scaling-wrapper')
         if (clonedContainer) {
-          clonedContainer.style.transform = 'scale(1)'
+          clonedContainer.style.transform = 'none'
           clonedContainer.style.width = 'auto'
           clonedContainer.style.height = 'auto'
         }
@@ -90,12 +90,16 @@ async function generateFinal() {
 
     <div class="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-16 pt-12">
       <!-- High-Res Mockup -->
-      <div class="relative group/mockup">
+      <div 
+        class="relative group/mockup flex items-center justify-center shrink-0"
+        :style="{ width: '100%', maxWidth: '500px', minHeight: '600px' }"
+      >
          <!-- Aura -->
          <div class="absolute -inset-20 bg-gradient-to-tr from-primary/10 via-secondary/10 to-transparent blur-[120px] opacity-0 group-hover/mockup:opacity-100 transition-all duration-1000"></div>
          
         <div 
-          class="relative transform transition-all duration-700 hover:scale-[1.02] z-10 origin-center flex justify-center items-center h-[700px] w-full max-w-[500px]"
+          id="scaling-wrapper"
+          class="relative transform transition-all duration-700 hover:scale-[1.02] z-10 origin-center"
           :style="{ transform: `scale(${dynamicScale})` }"
         >
           <PhotoFrame 
