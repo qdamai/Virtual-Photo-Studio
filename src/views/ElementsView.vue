@@ -27,8 +27,7 @@ const dynamicScale = computed(() => {
   }
 })
 
-const activeMainType = ref('stickers') // 'stickers' or 'elements'
-const activeCategory = ref('pastel')
+const activeMainType = ref('background') // 'stickers' or 'elements'
 
 const stickerManifest = {
   cool: Array.from({length: 28}, (_, i) => `COOL (${i + 1}).png`),

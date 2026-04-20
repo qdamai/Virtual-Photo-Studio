@@ -64,54 +64,33 @@ const currentStepIndex = computed(() => {
           <span class="hidden md:inline text-base md:text-xl font-bold tracking-tight">Dame-Snap</span>
         </div>
 
-      <div class="flex items-center gap-1.5 p-1 md:p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-3xl rounded-[32px] border border-white/20 shadow-xl self-center md:self-auto">
-        <!-- Language Switcher - min 44px touch target via py on pill wrapper -->
-        <div class="flex gap-0.5 pr-2 border-r border-white/20 mr-1 ml-1">
+      <!-- Sleek compact controls pill -->
+      <div class="flex items-center gap-1 p-1 bg-black/5 dark:bg-white/10 backdrop-blur-3xl rounded-2xl border border-white/20 shadow-xl self-center md:self-auto">
+        <!-- Language Switcher - compact squared buttons -->
+        <div class="flex gap-0.5 pr-1.5 border-r border-white/20">
            <button 
              v-for="lang in ['id', 'en']" 
              :key="lang"
              @click="store.locale = lang"
-             class="min-w-[44px] min-h-[44px] md:w-10 md:h-10 md:min-w-0 md:min-h-0 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center relative overflow-hidden group"
-             :class="store.locale === lang ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-lg' : 'text-slate-500 opacity-60 hover:opacity-100'"
+             class="w-8 h-8 md:w-9 md:h-9 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center relative overflow-hidden"
+             :class="store.locale === lang ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-md' : 'text-slate-500 opacity-50 hover:opacity-80'"
            >
              {{ lang }}
-             <div v-if="store.locale === lang" class="absolute inset-x-0 bottom-0 h-1 bg-primary/20 animate-pulse"></div>
            </button>
         </div>
 
-        <!-- Triple Theme Studio Switcher (Modern Orb Design) -->
-         <div class="h-7 md:h-10 w-[96px] md:w-[124px] rounded-full flex items-center relative gap-0.5 md:gap-1 p-0.5">
-           <!-- Moving Glow Indicator -->
-           <div 
-             class="absolute w-6 h-6 md:w-9 md:h-9 bg-primary rounded-full shadow-[0_5px_15px_-4px_rgba(99,102,241,0.5)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] z-0"
-             :style="{ 
-                transform: `translateX(${store.appTheme === 'playful' ? '0' : store.appTheme === 'light' ? '26px' : '52px'})`,
-                backgroundColor: store.appTheme === 'playful' ? '#6366f1' : store.appTheme === 'light' ? '#0ea5e9' : '#fb7185'
-             }"
-           ></div>
-           
+        <!-- Theme Switcher — flat segmented control -->
+        <div class="flex items-center gap-0.5 pl-0.5">
            <button 
-             @click="store.appTheme = 'playful'"
-             class="min-w-[44px] min-h-[44px] md:w-9 md:h-9 md:min-w-0 md:min-h-0 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
-             :class="store.appTheme === 'playful' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
+             v-for="[theme, icon] in [['playful', 'sparkles'], ['light', 'sun'], ['dark', 'moon']]"
+             :key="theme"
+             @click="store.appTheme = theme"
+             class="w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center relative z-10 transition-all duration-300 active:scale-90"
+             :class="store.appTheme === theme ? 'bg-primary text-white shadow-md' : 'text-slate-400 opacity-50 hover:opacity-80'"
            >
-             <Sparkles class="w-3 h-3 md:w-4 md:h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
-           </button>
-
-           <button 
-             @click="store.appTheme = 'light'"
-             class="min-w-[44px] min-h-[44px] md:w-9 md:h-9 md:min-w-0 md:min-h-0 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
-             :class="store.appTheme === 'light' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
-           >
-             <Sun class="w-3 h-3 md:w-4 md:h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
-           </button>
-
-           <button 
-             @click="store.appTheme = 'dark'"
-             class="min-w-[44px] min-h-[44px] md:w-9 md:h-9 md:min-w-0 md:min-h-0 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
-             :class="store.appTheme === 'dark' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
-           >
-             <Moon class="w-3 h-3 md:w-4 md:h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
+             <Sparkles v-if="theme === 'playful'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
+             <Sun      v-else-if="theme === 'light'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
+             <Moon     v-else                        class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
            </button>
         </div>
       </div>

@@ -108,10 +108,10 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                  />
               </div>
 
-              <div class="p-5 bg-slate-50 rounded-2xl border-2 border-slate-100/50 flex flex-col gap-2">
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1.5">
                  <div class="flex justify-between items-center">
                     <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total Sesi Foto</span>
-                    <span class="px-3 py-1 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-widest">{{ totalPhotosSelection }} KALI</span>
+                    <span class="px-2.5 py-0.5 bg-slate-800 text-white rounded-lg text-[9px] font-black tracking-widest">{{ totalPhotosSelection }} KALI</span>
                  </div>
                  <p class="text-[10px] font-bold text-slate-400 italic">"Buat kerangka sekreatif mungkin sesukamu!"</p>
               </div>
@@ -121,7 +121,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
            <div class="flex flex-col items-center gap-6">
               <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Blueprint Preview</span>
               <div 
-                class="w-full aspect-square bg-slate-100 rounded-[48px] p-6 shadow-inner border-4 border-white flex items-center justify-center transition-all group-hover/builder:bg-white overflow-hidden"
+                class="w-full aspect-square bg-slate-100 rounded-2xl p-5 shadow-inner border-2 border-white flex items-center justify-center transition-all group-hover/builder:bg-white overflow-hidden"
               >
                  <div class="w-full h-full flex items-center justify-center p-2">
                    <div 
