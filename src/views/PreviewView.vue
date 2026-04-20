@@ -57,7 +57,7 @@ function handleEdit() {
       >
          <div class="absolute -inset-10 bg-primary/10 blur-[100px] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
          <div 
-            class="transition-all duration-700 hover:scale-105 z-10 relative"
+            class="absolute top-0 left-0 transition-all duration-700 z-10"
             :style="{ transform: `scale(${dynamicScale.scale})`, transformOrigin: 'top left' }"
          >
             <PhotoFrame :photos="store.capturedPhotos" class="shadow-2xl shadow-primary/20" />

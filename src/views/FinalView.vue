@@ -109,7 +109,7 @@ async function generateFinal() {
          
         <div 
           id="scaling-wrapper"
-          class="relative transition-all duration-700 hover:scale-[1.02] z-10"
+          class="absolute top-0 left-0 transition-all duration-700 z-10"
           :style="{ transform: `scale(${dynamicScale.scale})`, transformOrigin: 'top left' }"
         >
           <PhotoFrame 
