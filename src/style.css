@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Playfair+Display:ital,wght@0,700;1,700&family=Montserrat:wght@700&family=Raleway:wght@700&family=Nunito:wght@700&family=Quicksand:wght@700&family=Inter:wght@700&family=Lato:wght@700&family=Open+Sans:wght@700&family=Roboto:wght@700&family=Oswald:wght@700&family=Bebas+Neue&family=Pacifico&family=Dancing+Script:wght@700&family=Great+Vibes&family=Amatic+SC:wght@700&family=Fredoka:wght@700&family=Baloo+2:wght@700&family=Anton&family=DM+Sans:wght@700&display=swap');
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+.font-poppins { font-family: 'Poppins', sans-serif; }
+.font-playfair { font-family: 'Playfair Display', serif; }
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+.font-raleway { font-family: 'Raleway', sans-serif; }
+.font-nunito { font-family: 'Nunito', sans-serif; }
+.font-quicksand { font-family: 'Quicksand', sans-serif; }
+.font-inter { font-family: 'Inter', sans-serif; }
+.font-lato { font-family: 'Lato', sans-serif; }
+.font-opensans { font-family: 'Open Sans', sans-serif; }
+.font-roboto { font-family: 'Roboto', sans-serif; }
+.font-oswald { font-family: 'Oswald', sans-serif; }
+.font-bebas { font-family: 'Bebas Neue', cursive; }
+.font-pacifico { font-family: 'Pacifico', cursive; }
+.font-dancing { font-family: 'Dancing Script', cursive; }
+.font-vibes { font-family: 'Great Vibes', cursive; }
+.font-amatic { font-family: 'Amatic SC', cursive; }
+.font-fredoka { font-family: 'Fredoka', sans-serif; }
+.font-baloo { font-family: 'Baloo 2', cursive; }
+.font-anton { font-family: 'Anton', sans-serif; }
+.font-dmsans { font-family: 'DM Sans', sans-serif; }
+
+:root {
+  --background: #f8fafc;
+  --text: #1e293b;
+  --primary: #6366f1;
+  --secondary: #a855f7;
+  --app-text: #1e293b;
+  
+  /* CRITICAL: html2canvas OKLCH Fix */
+  /* Tailwind v4 uses OKLCH by default which breaks html2canvas. We must force fallback variables. */
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-shadow-color: rgba(0,0,0,0) !important;
+  --tw-ring-color: rgba(0,0,0,0) !important;
+  --tw-inset-shadow-color: rgba(0,0,0,0) !important;
+  --tw-ring-offset-color: rgba(0,0,0,0) !important;
+  
+  /* Force sRGB and only light mode for capture stability */
+  color-scheme: only light;
+}
+
+/* Brute-force reset for any nested elements that might inherit OKLCH variables */
+* {
+  --tw-ring-color: rgba(0,0,0,0);
+  --tw-ring-offset-color: rgba(0,0,0,0);
+  --tw-shadow-color: rgba(0,0,0,0);
+  --tw-inset-shadow-color: rgba(0,0,0,0);
+  
+  /* Modern browsers compute OKLCH in dev tools/defaults - we ensure inheritance is standard */
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-shadow: 0 0 #0000 !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* Custom Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.step-transition-enter-active,
+.step-transition-leave-active {
+  transition: all 0.3s ease;
+}
+
+.step-transition-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.step-transition-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+/* Patterns */
+/* Patterns - Using Mask for Dynamic Coloring */
+.pattern-dots {
+  mask-image: radial-gradient(circle, #000 2px, transparent 2.5px);
+  mask-size: 20px 20px;
+}
+
+.pattern-grid {
+  mask-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px);
+  mask-size: 20px 20px;
+}
+
+.pattern-stripes {
+  mask-image: repeating-linear-gradient(45deg, #000, #000 2px, transparent 2px, transparent 10px);
+}
+
+.pattern-abstract {
+  mask-image: radial-gradient(circle at 0% 0%, #000 0%, transparent 50%),
+               radial-gradient(circle at 100% 0%, #000 0%, transparent 50%),
+               radial-gradient(circle at 100% 100%, #000 0%, transparent 50%),
+               radial-gradient(circle at 0% 100%, #000 0%, transparent 50%);
+  mask-size: 100px 100px;
+}
+
+/* NEW PATTERNS */
+.pattern-checkered-sm {
+  mask-image: linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%);
+  mask-size: 16px 16px;
+  mask-position: 0 0, 0 8px, 8px 8px, 8px 0;
+}
+
+.pattern-checkered-lg {
+  mask-image: linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%);
+  mask-size: 40px 40px;
+  mask-position: 0 0, 0 20px, 20px 20px, 20px 0;
+}
+
+.pattern-gingham {
+  mask-image: linear-gradient(90deg, rgba(0,0,0,0.3) 50%, transparent 50%), linear-gradient(0deg, rgba(0,0,0,0.3) 50%, transparent 50%);
+  mask-size: 20px 20px;
+}
+
+.pattern-dots-lg {
+  mask-image: radial-gradient(circle, #000 6px, transparent 6px);
+  mask-size: 30px 30px;
+}
+
+.pattern-dots-tiny {
+  mask-image: radial-gradient(circle, #000 0.5px, transparent 0.5px);
+  mask-size: 8px 8px;
+}
+
+.pattern-v-stripes {
+  mask-image: linear-gradient(90deg, #000 50%, transparent 50%);
+  mask-size: 20px 20px;
+}
+
+.pattern-h-stripes {
+  mask-image: linear-gradient(0deg, #000 50%, transparent 50%);
+  mask-size: 20px 20px;
+}
+
+.pattern-diagonal-thin {
+  mask-image: repeating-linear-gradient(45deg, #000, #000 1px, transparent 1px, transparent 8px);
+}
+
+.pattern-diagonal-bold {
+  mask-image: repeating-linear-gradient(45deg, #000, #000 10px, transparent 10px, transparent 40px);
+}
+
+.pattern-zigzag {
+  mask-image: linear-gradient(135deg, #000 25%, transparent 25%),
+              linear-gradient(225deg, #000 25%, transparent 25%),
+              linear-gradient(315deg, #000 25%, transparent 25%),
+              linear-gradient(45deg, #000 25%, transparent 25%);
+  mask-size: 50px 50px;
+  mask-position: -25px 0, -25px 0, 0 0, 0 0;
+}
+
+.pattern-waves {
+  mask-image: radial-gradient(circle at 50% 0, #000 4px, transparent 4.5px),
+               radial-gradient(circle at 50% 100%, #000 4px, transparent 4.5px);
+  mask-size: 20px 20px;
+  mask-position: 0 0, 10px 10px;
+}
+
+.pattern-hearts-sm {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+  mask-size: 32px 32px;
+}
+
+.pattern-hearts-lg {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+  mask-size: 100px 100px;
+}
+
+.pattern-sparkles {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12 1L9 9L1 12L9 15L12 23L15 15L23 12L15 9L12 1Z'/%3E%3C/svg%3E");
+  mask-size: 24px 24px;
+}
+
+.pattern-smileys {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M8 14s1.5 2 4 2 4-2 4-2'/%3E%3Cline x1='9' y1='9' x2='9.01' y2='9'/%3E%3Cline x1='15' y1='9' x2='15.01' y2='9'/%3E%3C/svg%3E");
+  mask-size: 32px 32px;
+}
+
+.pattern-flowers {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12 22C12 22 12 16 12 12M12 12C14.5 12 16 10.5 16 8C16 5.5 14.5 4 12 4M12 12C9.5 12 8 10.5 8 8C8 5.5 9.5 4 12 4M12 12C12 9.5 13.5 8 16 8C18.5 8 20 9.5 20 12M12 12C12 9.5 10.5 8 8 8C5.5 8 4 9.5 4 12M12 12C12 14.5 13.5 16 16 16C18.5 16 20 14.5 20 12M12 12C12 14.5 10.5 16 8 16C5.5 16 4 14.5 4 12'/%3E%3C/svg%3E");
+  mask-size: 40px 40px;
+}
+
+.pattern-cherries {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='5.5' cy='17.5' r='4.5'/%3E%3Ccircle cx='18.5' cy='17.5' r='4.5'/%3E%3Cpath d='M10 17.5c0-5 3.5-9 8.5-9' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E");
+  mask-size: 40px 40px;
+}
+
+.pattern-strawberries {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12,2C12,2 8,2 8,6C8,10 12,22 12,22C12,22 16,10 16,6C16,2 12,2 12,2ZM10,8C10,7.4 10.4,7 11,7C11.6,7 12,7.4 12,8C12,8.6 11.6,9 11,9C10.4,9 10,8.6 10,8Z'/%3E%3C/svg%3E");
+  mask-size: 32px 32px;
+}
+
+.pattern-bows {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12,12 C12,12 8,8 4,8 C0,8 0,12 4,12 C4,12 8,12 12,12 C12,12 16,12 20,12 C24,12 24,8 20,8 C16,8 12,12 12,12 Z M12,12 C12,12 14,14 14,16 C14,18 10,18 10,16 C10,14 12,12 12,12 Z'/%3E%3C/svg%3E");
+  mask-size: 40px 40px;
+}
+
+.pattern-clouds {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M17.5,19c-3,0-5.5-2.5-5.5-5.5c0-0.2,0-0.4,0-0.6C10.6,12.2,9,10,9,7.5C9,4.5,11.5,2,14.5,2c1.9,0,3.5,1,4.4,2.5C19.3,4.1,19.6,4,20,4c2.2,0,4,1.8,4,4c0,2.1-1.6,3.8-3.6,4C20.4,12,20,12,19.5,12c0,0.5,0.1,0.9,0.2,1.4C22.3,13.9,24,16.2,24,19C24,21.8,21.1,24,18.3,24C18.3,24,18.3,24,18.3,24'/%3E%3C/svg%3E");
+  mask-size: 50px 50px;
+}
+
+.pattern-bubbles {
+  mask-image: radial-gradient(circle, #000 6px, transparent 6.5px), radial-gradient(circle, #000 2px, transparent 2.5px);
+  mask-size: 40px 40px;
+  mask-position: 0 0, 20px 20px;
+}
+
+.pattern-hexagon {
+  mask-image: 
+    linear-gradient(30deg, #000 12%, transparent 12.5%, transparent 87%, #000 87.5%, #000),
+    linear-gradient(150deg, #000 12%, transparent 12.5%, transparent 87%, #000 87.5%, #000),
+    linear-gradient(30deg, #000 12%, transparent 12.5%, transparent 87%, #000 87.5%, #000),
+    linear-gradient(150deg, #000 12%, transparent 12.5%, transparent 87%, #000 87.5%, #000);
+  mask-size: 40px 70px;
+  mask-position: 0 0, 0 0, 20px 35px, 20px 35px;
+}
+
+.pattern-diamonds {
+  mask-image: linear-gradient(135deg, #000 25%, transparent 25%),
+              linear-gradient(225deg, #000 25%, transparent 25%),
+              linear-gradient(315deg, #000 25%, transparent 25%),
+              linear-gradient(45deg, #000 25%, transparent 25%);
+  mask-size: 50px 50px;
+  mask-position: -25px 0, -25px 0, 0 0, 0 0;
+}
+
+.pattern-crosses {
+  mask-image: 
+    linear-gradient(90deg, #000 2px, transparent 2px) 0 0,
+    linear-gradient(0deg, #000 2px, transparent 2px) 0 0;
+  mask-size: 20px 20px;
+  mask-position: -1px -1px;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  100% { transform: translateX(150%) skewX(-20deg); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2.5s infinite;
+}
+
+@keyframes zoom-in {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-in {
+  animation-fill-mode: forwards;
+}
+
+.zoom-in {
+  animation-name: zoom-in;
+}
+
+.duration-300 {
+  animation-duration: 300ms;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
