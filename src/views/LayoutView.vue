@@ -32,7 +32,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-6 md:gap-10 max-w-7xl mx-auto px-3 md:px-4 pb-16 md:pb-20 mt-4 md:mt-10">
+  <div class="w-full flex flex-col items-center gap-6 md:gap-10 max-w-7xl mx-auto px-3 md:px-4 mt-4 md:mt-10">
     <!-- Header -->
     <div class="text-center space-y-4">
       <h2 class="text-2xl md:text-4xl lg:text-5xl font-black tracking-tighter" :style="{ color: 'var(--app-text)' }">
@@ -56,18 +56,18 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
           v-for="layout in layouts" 
           :key="layout.id"
           @click="selectLayout(layout)"
-          class="group relative backdrop-blur-xl p-4 md:p-6 rounded-[24px] md:rounded-[32px] border-2 md:border-4 transition-all duration-500 transform hover:-translate-y-1 cursor-pointer flex items-center gap-4 md:gap-5"
+          class="group relative backdrop-blur-xl p-3 md:p-5 rounded-xl md:rounded-2xl border transition-all duration-500 transform hover:-translate-y-1 cursor-pointer flex items-center gap-4 align-middle"
           :style="{ 
              backgroundColor: 'var(--card-bg)', 
-             borderColor: currentLayoutId === layout.id ? 'var(--secondary)' : 'rgba(255,255,255,0.1)' 
+             borderColor: currentLayoutId === layout.id ? 'var(--secondary)' : 'var(--ui-muted)'
           }"
           :class="currentLayoutId === layout.id ? 'shadow-xl scale-[1.02] z-10' : 'hover:shadow-md opacity-80 hover:opacity-100'"
         >
-          <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-[14px] bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black border border-slate-200 dark:border-slate-700" :style="{ color: 'var(--app-text)' }">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black border border-slate-200 dark:border-slate-700" :style="{ color: 'var(--app-text)' }">
              {{ layout.cols }}x{{ layout.rows }}
           </div>
-          <div class="text-left">
-             <h3 class="text-lg md:text-xl font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
+          <div class="text-left flex-1">
+             <h3 class="text-base md:text-lg font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
              <p class="text-[8px] md:text-[9px] font-bold uppercase tracking-widest opacity-50" :style="{ color: 'var(--app-text)' }">{{ layout.description }}</p>
           </div>
           <CheckCircle2 v-if="currentLayoutId === layout.id" class="ml-auto w-6 h-6 text-secondary" />
@@ -76,7 +76,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
 
       <!-- Right: Custom Grid Builder -->
       <div 
-        class="lg:col-span-8 p-5 md:p-8 lg:p-12 rounded-[32px] md:rounded-[48px] shadow-2xl border-b-[8px] relative group/builder"
+        class="lg:col-span-8 p-4 md:p-6 lg:p-10 rounded-2xl md:rounded-3xl shadow-xl border-b-[4px] relative group/builder"
         :style="{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--sub-bg)' }"
       >
         <!-- Decoration Background -->
@@ -126,10 +126,10 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
            <!-- Blueprint Preview -->
            <div class="flex flex-col items-center gap-4 md:gap-6">
               <span class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] opacity-50" :style="{ color: 'var(--app-text)' }">Blueprint Preview</span>
-              <div 
-                class="w-full aspect-square rounded-2xl p-4 md:p-5 shadow-inner border border-white/10 flex items-center justify-center transition-all overflow-hidden"
-                :style="{ backgroundColor: 'var(--sub-bg)' }"
-              >
+               <div 
+                 class="w-full aspect-square rounded-xl p-4 md:p-5 shadow-inner border border-black/5 dark:border-white/5 flex items-center justify-center transition-all overflow-hidden"
+                 :style="{ backgroundColor: 'var(--sub-bg)' }"
+               >
                  <div class="w-full h-full flex items-center justify-center p-2">
                    <div 
                      class="grid gap-2 transition-all duration-700 max-w-full max-h-full"
@@ -144,7 +144,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                    >
                       <div 
                         v-for="i in Math.min(totalPhotosSelection, 64)" :key="i"
-                        class="bg-white dark:bg-slate-900 shadow-sm border border-black/5 rounded-[4px] relative animate-in zoom-in duration-300"
+                        class="bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-white/10 rounded-[4px] relative animate-in zoom-in duration-300"
                         :style="{ aspectRatio: `${store.cellWidth} / ${store.cellHeight}` }"
                       >
                          <div class="absolute inset-0 flex items-center justify-center opacity-10">
