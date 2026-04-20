@@ -100,7 +100,7 @@ function addImageSticker(category, filename) {
   store.config.stickers.push({
     id: Date.now(),
     type: 'image',
-    src: `/src/assets/stickers/${category}/${filename}`, // Relative to src
+    src: `/assets/stickers/${category}/${filename}`, // Must use public/ path for production builds
     x: 150,
     y: 150,
     scale: 0.5,
@@ -271,7 +271,7 @@ const fontStyles = [
                   :style="{ backgroundColor: 'var(--card-bg)' }"
                 >
                   <img 
-                    :src="`/src/assets/stickers/${activeCategory}/${sticker}`" 
+                    :src="`/assets/stickers/${activeCategory}/${sticker}`" 
                     class="max-w-full max-h-full object-contain"
                   />
                 </button>
