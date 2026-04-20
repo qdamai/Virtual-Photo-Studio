@@ -3,13 +3,13 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePhotoboothStore } from '../store'
 import PhotoFrame from '../components/PhotoFrame.vue'
-import html2canvas from 'html2canvas'
-import { Sparkles, Download, ArrowRight, CornerRightDown } from 'lucide-vue-next'
+import { Sparkles, Download } from 'lucide-vue-next'
 
 const router = useRouter()
 const store = usePhotoboothStore()
 const frameRef = ref(null)
 const isGenerating = ref(false)
+const errorMsg = ref(null)
 
 const dynamicScale = computed(() => {
   const cols = store.config.cols
@@ -30,58 +30,182 @@ const dynamicScale = computed(() => {
   }
 })
 
-async function generateFinal() {
-  if (!frameRef.value || isGenerating.value) return
-  
-  isGenerating.value = true
-  
-  try {
-    // We render at high scale for Ultra-HD quality, but capped at 2 to prevent mobile memory crashes
-    const canvas = await html2canvas(frameRef.value.$el, {
-      scale: 2, 
-      backgroundColor: null,
-      useCORS: true,
-      logging: false,
-      allowTaint: true,
-      onclone: (clonedDoc) => {
-        // Find the cloned frame container and force natural scale for correct capture
-        const clonedContainer = clonedDoc.getElementById('scaling-wrapper')
-        if (clonedContainer) {
-          clonedContainer.style.transform = 'none'
-          clonedContainer.style.width = 'auto'
-          clonedContainer.style.height = 'auto'
-        }
+// Load an image from a src and return a promise
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(img)
+    img.onerror = () => {
+      // retry without crossOrigin for data URLs
+      const img2 = new Image()
+      img2.onload = () => resolve(img2)
+      img2.onerror = reject
+      img2.src = src
+    }
+    img.src = src
+  })
+}
 
-        // CRITICAL FIX: html2canvas 1.4.1 crashes on OKLCH/OKLAB colors (used by Tailwind v4)
-        const style = clonedDoc.createElement('style')
-        style.innerText = `
-          *, ::before, ::after {
-            --tw-shadow: 0 0 #0000 !important;
-            --tw-ring-color: transparent !important;
-            --tw-ring-shadow: 0 0 #0000 !important;
-            --tw-shadow-color: transparent !important;
-            --tw-inset-shadow: 0 0 #0000 !important;
-            --tw-ring-inset:  !important;
-            --tw-ring-offset-width: 0px !important;
-            --tw-ring-offset-color: transparent !important;
+// Apply CSS filter string to canvas context using CanvasFilter (Chrome 92+) or skip gracefully
+function applyFilter(ctx, filterStr) {
+  try {
+    if (filterStr && filterStr !== 'none') {
+      ctx.filter = filterStr
+    }
+  } catch(e) { /* ignore if unsupported */ }
+}
+
+async function generateFinal() {
+  if (isGenerating.value) return
+  isGenerating.value = true
+  errorMsg.value = null
+
+  try {
+    const gap = 10
+    const pad = 16
+    const cols = store.config.cols
+    const rows = store.config.rows
+    const cw = store.cellWidth
+    const ch = store.cellHeight
+    const footerH = 100
+
+    const frameW = (cw * cols) + (gap * (cols - 1)) + (pad * 2)
+    const frameH = (ch * rows) + (gap * (rows - 1)) + (pad * 2) + footerH
+
+    const scale = 2 // output resolution multiplier
+    const canvas = document.createElement('canvas')
+    canvas.width = frameW * scale
+    canvas.height = frameH * scale
+    const ctx = canvas.getContext('2d')
+    ctx.scale(scale, scale)
+
+    // --- 1. Draw background ---
+    ctx.fillStyle = store.config.color || '#ffffff'
+    ctx.beginPath()
+    ctx.roundRect(0, 0, frameW, frameH, 16)
+    ctx.fill()
+
+    // --- 2. Draw photos grid ---
+    const photos = store.capturedPhotos
+    let photoIdx = 0
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = pad + c * (cw + gap)
+        const y = pad + r * (ch + gap)
+
+        // Black cell background
+        ctx.fillStyle = '#000000'
+        ctx.fillRect(x, y, cw, ch)
+
+        const src = photos[photoIdx]
+        if (src) {
+          try {
+            const img = await loadImage(src)
+            // Filter support
+            const filterStr = getFilterStyle(store.config.filter)
+            applyFilter(ctx, filterStr)
+            
+            // Center-crop the photo into the cell
+            const imgAspect = img.naturalWidth / img.naturalHeight
+            const cellAspect = cw / ch
+            let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight
+            if (imgAspect > cellAspect) {
+              sw = img.naturalHeight * cellAspect
+              sx = (img.naturalWidth - sw) / 2
+            } else {
+              sh = img.naturalWidth / cellAspect
+              sy = (img.naturalHeight - sh) / 2
+            }
+
+            ctx.save()
+            ctx.beginPath()
+            ctx.rect(x, y, cw, ch)
+            ctx.clip()
+            ctx.drawImage(img, sx, sy, sw, sh, x, y, cw, ch)
+            ctx.restore()
+            ctx.filter = 'none'
+          } catch(e) {
+            console.warn('Could not draw photo', e)
           }
-        `
-        clonedDoc.head.appendChild(style)
+        }
+        photoIdx++
       }
-    })
-    
+    }
+
+    // --- 3. Draw stickers ---
+    for (const sticker of (store.config.stickers || [])) {
+      if (sticker.type === 'image' && sticker.src) {
+        try {
+          const img = await loadImage(sticker.src)
+          ctx.save()
+          ctx.translate(sticker.x, sticker.y)
+          ctx.rotate(((sticker.rotation || 0) * Math.PI) / 180)
+          ctx.scale(sticker.scale || 1, sticker.scale || 1)
+          const sw = 128, sh = 128
+          ctx.drawImage(img, -sw / 2, -sh / 2, sw, sh)
+          ctx.restore()
+        } catch(e) { /* skip unloadable stickers */ }
+      } else if (sticker.type === 'emoji' || (!sticker.type && typeof sticker.src === 'string' && sticker.src.length <= 4)) {
+        ctx.save()
+        ctx.translate(sticker.x, sticker.y)
+        ctx.rotate(((sticker.rotation || 0) * Math.PI) / 180)
+        ctx.scale(sticker.scale || 1, sticker.scale || 1)
+        ctx.font = '48px sans-serif'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(sticker.src, 0, 0)
+        ctx.restore()
+      }
+    }
+
+    // --- 4. Draw footer text ---
+    const footerY = pad + rows * ch + (rows - 1) * gap
+    if (store.config.text) {
+      ctx.font = `bold ${store.config.fontSize || 20}px sans-serif`
+      ctx.fillStyle = store.config.textColor || '#000000'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(store.config.text, frameW / 2, footerY + 36)
+    }
+
+    // Watermark
+    ctx.font = 'bold 9px sans-serif'
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'
+    ctx.letterSpacing = '0.3em'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('DAME-SNAP PHOTOBOOTH', frameW / 2, footerY + 72)
+
+    // --- 5. Export ---
     store.finalImage = canvas.toDataURL('image/png')
-    
-    // Quick delay for UX
+
     setTimeout(() => {
       isGenerating.value = false
       router.push({ name: 'download' })
-    }, 1200)
-    
+    }, 800)
+
   } catch (err) {
-    console.error('Error generating image:', err)
+    console.error('Canvas generation error:', err)
+    errorMsg.value = 'Gagal memproses foto. Coba lagi.'
     isGenerating.value = false
   }
+}
+
+function getFilterStyle(filter) {
+  const filters = {
+    vintage: 'sepia(0.5) contrast(1.1) brightness(0.9) saturate(0.8)',
+    retro: 'sepia(0.3) saturate(1.4) contrast(1.2)',
+    mono: 'grayscale(1) contrast(1.2) brightness(1.1)',
+    sepia: 'sepia(0.8) contrast(1.05)',
+    warm: 'saturate(1.3) sepia(0.2) brightness(1.05)',
+    cool: 'hue-rotate(30deg) saturate(1.1) brightness(1.05)',
+    bright: 'brightness(1.25) contrast(1.05) saturate(1.1)',
+    matte: 'contrast(0.85) brightness(1.1) saturate(0.9)',
+    pastel: 'brightness(1.15) saturate(0.7) contrast(0.9)',
+    cinematic: 'contrast(1.3) saturate(0.8) brightness(0.9)',
+  }
+  return filters[filter] || 'none'
 }
 </script>
 
@@ -113,7 +237,6 @@ async function generateFinal() {
           :style="{ transform: `scale(${dynamicScale.scale})`, transformOrigin: 'top left' }"
         >
           <PhotoFrame 
-            ref="frameRef" 
             :photos="store.capturedPhotos" 
             class="relative z-10" 
             :style="{ boxShadow: '0 25px 50px -12px rgba(99, 102, 241, 0.2)' }"
@@ -147,10 +270,13 @@ async function generateFinal() {
              </div>
 
              <div class="flex flex-col gap-4 relative z-10">
-                <button 
-                  @click="generateFinal"
-                  :disabled="isGenerating"
-                  class="group w-full flex items-center justify-between px-8 py-5 bg-primary text-white rounded-[24px] font-black text-lg transition-all hover:bg-slate-900 active:scale-95 shadow-xl shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden relative"
+                <!-- Error Message -->
+              <p v-if="errorMsg" class="text-red-500 font-bold text-xs text-center">{{ errorMsg }}</p>
+
+              <button 
+                @click="generateFinal"
+                :disabled="isGenerating"
+                class="group w-full flex items-center justify-between px-8 py-5 bg-primary text-white rounded-[24px] font-black text-lg transition-all hover:bg-slate-900 active:scale-95 shadow-xl shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden relative"
                 >
                    <div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-full transition-all duration-1000 skew-x-[-20deg]"></div>
                    <span class="relative z-10 text-sm tracking-widest uppercase">UNDUH FOTO</span>
