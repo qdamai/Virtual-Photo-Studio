@@ -49,29 +49,29 @@ const currentStepIndex = computed(() => {
     />
 
     <!-- Header / Logo -->
-    <header class="fixed top-0 left-0 w-full p-2.5 md:p-5 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 z-50">
-      <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4 w-full md:w-auto">
+    <header class="fixed top-0 left-0 w-full p-1.5 md:p-5 flex flex-col md:flex-row justify-between items-center gap-1 md:gap-4 z-50">
+      <div class="flex flex-wrap items-center justify-center gap-2 md:gap-4 w-full md:w-auto">
         <div 
           class="flex items-center gap-2 cursor-pointer group"
           @click="store.reset(); router.push('/')"
         >
-          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <div class="w-7 h-7 md:w-10 md:h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-6 md:h-6">
               <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
               <circle cx="12" cy="13" r="4"></circle>
             </svg>
           </div>
-          <span class="text-xl font-bold tracking-tight">Dame-Snap</span>
+          <span class="text-base md:text-xl font-bold tracking-tight">Dame-Snap</span>
         </div>
 
-      <div class="flex items-center gap-2 p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-3xl rounded-[32px] border border-white/20 shadow-xl self-center md:self-auto">
+      <div class="flex items-center gap-1.5 p-1 md:p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-3xl rounded-[32px] border border-white/20 shadow-xl self-center md:self-auto">
         <!-- Language Switcher -->
         <div class="flex gap-1 pr-2 border-r border-white/20 mr-1 ml-1">
            <button 
              v-for="lang in ['id', 'en']" 
              :key="lang"
              @click="store.locale = lang"
-             class="w-10 h-10 rounded-full text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center relative overflow-hidden group"
+             class="w-7 h-7 md:w-10 md:h-10 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center relative overflow-hidden group"
              :class="store.locale === lang ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-lg' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
              {{ lang }}
@@ -80,38 +80,38 @@ const currentStepIndex = computed(() => {
         </div>
 
         <!-- Triple Theme Studio Switcher (Modern Orb Design) -->
-        <div class="h-10 w-[124px] rounded-full flex items-center relative gap-1 p-0.5">
+         <div class="h-7 md:h-10 w-[96px] md:w-[124px] rounded-full flex items-center relative gap-0.5 md:gap-1 p-0.5">
            <!-- Moving Glow Indicator -->
            <div 
-             class="absolute w-9 h-9 bg-primary rounded-full shadow-[0_5px_15px_-4px_rgba(99,102,241,0.5)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] z-0"
+             class="absolute w-6 h-6 md:w-9 md:h-9 bg-primary rounded-full shadow-[0_5px_15px_-4px_rgba(99,102,241,0.5)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] z-0"
              :style="{ 
-                transform: `translateX(${store.appTheme === 'playful' ? '0' : store.appTheme === 'light' ? '38px' : '76px'})`,
+                transform: `translateX(${store.appTheme === 'playful' ? '0' : store.appTheme === 'light' ? '26px' : '52px'})`,
                 backgroundColor: store.appTheme === 'playful' ? '#6366f1' : store.appTheme === 'light' ? '#0ea5e9' : '#fb7185'
              }"
            ></div>
            
            <button 
              @click="store.appTheme = 'playful'"
-             class="w-9 h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
+             class="w-6 h-6 md:w-9 md:h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
              :class="store.appTheme === 'playful' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
-             <Sparkles class="w-4 h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
+             <Sparkles class="w-3 h-3 md:w-4 md:h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
            </button>
 
            <button 
              @click="store.appTheme = 'light'"
-             class="w-9 h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
+             class="w-6 h-6 md:w-9 md:h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
              :class="store.appTheme === 'light' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
-             <Sun class="w-4 h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
+             <Sun class="w-3 h-3 md:w-4 md:h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
            </button>
 
            <button 
              @click="store.appTheme = 'dark'"
-             class="w-9 h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
+             class="w-6 h-6 md:w-9 md:h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
              :class="store.appTheme === 'dark' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
-             <Moon class="w-4 h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
+             <Moon class="w-3 h-3 md:w-4 md:h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
            </button>
         </div>
       </div>
@@ -129,7 +129,7 @@ const currentStepIndex = computed(() => {
     </header>
 
     <!-- Main Content -->
-    <main class="relative z-10 pt-24 pb-28 md:pt-32 md:pb-40 px-3 md:px-4 max-w-7xl mx-auto min-h-screen flex flex-col items-center">
+    <main class="relative z-10 pt-16 pb-20 md:pt-32 md:pb-40 px-3 md:px-4 max-w-7xl mx-auto min-h-screen flex flex-col items-center">
       <router-view v-slot="{ Component }">
         <transition name="step-transition" mode="out-in">
           <component :is="Component" :key="route.name" />

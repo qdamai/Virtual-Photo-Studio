@@ -100,13 +100,13 @@ function handleRetry() {
           <CheckCircle2 class="w-10 h-10" />
        </div>
        <div class="space-y-3">
-          <h2 class="text-4xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none">Berhasil!</h2>
+          <h2 class="text-3xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none">Berhasil!</h2>
           <p class="text-slate-400 font-bold uppercase tracking-[0.4em] text-[10px] md:text-xs">Foto siap disimpan dan dibagikan</p>
        </div>
     </div>
 
     <!-- Centered Layout for Desktop -->
-    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16 pt-8 pb-12">
+    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-12 lg:gap-16 pt-4 md:pt-8 pb-8 md:pb-12">
       
       <!-- Final Image Result -->
       <div class="relative group/final shrink-0 flex items-center justify-center">
@@ -123,7 +123,7 @@ function handleRetry() {
       <!-- Interaction Panel -->
       <div class="flex flex-col gap-6 w-full max-w-xs md:max-w-sm shrink-0">
           <!-- Download Card -->
-          <div class="bg-white p-8 md:p-10 rounded-[48px] shadow-2xl border-4 border-slate-50 flex flex-col gap-8 relative overflow-hidden group/actions transition-all hover:-translate-y-2">
+          <div class="bg-white p-5 md:p-8 lg:p-10 rounded-[36px] md:rounded-[48px] shadow-2xl border-4 border-slate-50 flex flex-col gap-5 md:gap-8 relative overflow-hidden group/actions transition-all hover:-translate-y-2">
              <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full z-0 group-hover/actions:scale-150 transition-transform"></div>
              
              <div class="flex flex-col gap-4 relative z-10">

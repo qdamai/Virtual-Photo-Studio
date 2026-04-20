@@ -166,11 +166,11 @@ const fontStyles = [
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-8 max-w-7xl mx-auto px-4 pb-20" @mousedown.self="store.config.selectedElementId = null">
-    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 mt-4">
+  <div class="w-full flex flex-col items-center gap-4 md:gap-8 max-w-7xl mx-auto px-2 md:px-4 pb-16 md:pb-20" @mousedown.self="store.config.selectedElementId = null">
+    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-5 md:gap-8 lg:gap-16 mt-2 md:mt-4">
       <!-- Edit Panel (Uniform Grid and Tabs) -->
       <div 
-        class="flex-1 w-full max-w-xl p-8 rounded-[40px] shadow-xl border border-white/20 flex flex-col gap-6 transition-all duration-500 overflow-visible"
+        class="flex-1 w-full max-w-xl p-4 md:p-8 rounded-[28px] md:rounded-[40px] shadow-xl border border-white/20 flex flex-col gap-4 md:gap-6 transition-all duration-500 overflow-visible"
         :style="{ backgroundColor: 'var(--card-bg)', backdropFilter: 'blur(40px)', color: 'var(--app-text)' }"
         @mousedown.stop
       >
@@ -184,7 +184,7 @@ const fontStyles = [
                   @focus="store.config.selectedElementId = 'text-main'"
                   type="text" 
                   placeholder="Type your message..."
-                  class="w-full px-8 py-5 rounded-[32px] border-2 border-transparent focus:border-primary text-xl font-black outline-none transition-all placeholder:opacity-20 shadow-inner"
+                  class="w-full px-5 md:px-8 py-3 md:py-5 rounded-[24px] md:rounded-[32px] border-2 border-transparent focus:border-primary text-base md:text-xl font-black outline-none transition-all placeholder:opacity-20 shadow-inner"
                   :style="{ backgroundColor: 'var(--sub-bg)', color: 'var(--app-text)' }"
                 />
                 <div class="absolute right-6 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary group-focus-within:animate-ping"></div>
@@ -425,7 +425,7 @@ const fontStyles = [
 
       <!-- Preview Section -->
       <div 
-         class="relative flex items-center justify-center shrink-0 w-full lg:sticky lg:top-8 h-fit lg:w-fit p-8 lg:p-12 rounded-[64px] border-4 border-white/20 shadow-sm transition-colors duration-500 overflow-hidden"
+         class="relative flex items-center justify-center shrink-0 w-full lg:sticky lg:top-8 h-fit lg:w-fit p-4 md:p-8 lg:p-12 rounded-[40px] md:rounded-[64px] border-4 border-white/20 shadow-sm transition-colors duration-500 overflow-hidden"
         :style="{ 
           backgroundColor: 'var(--card-bg)',
           backdropFilter: 'blur(20px)'

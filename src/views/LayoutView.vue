@@ -32,10 +32,10 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-10 max-w-7xl mx-auto px-4 pb-20 mt-10">
+  <div class="w-full flex flex-col items-center gap-6 md:gap-10 max-w-7xl mx-auto px-3 md:px-4 pb-16 md:pb-20 mt-4 md:mt-10">
     <!-- Header -->
     <div class="text-center space-y-4">
-      <h2 class="text-4xl md:text-5xl font-black tracking-tighter" :style="{ color: 'var(--app-text)' }">
+      <h2 class="text-2xl md:text-4xl lg:text-5xl font-black tracking-tighter" :style="{ color: 'var(--app-text)' }">
         Susunan <span class="text-secondary italic">Bingkai</span>
       </h2>
       <p class="font-bold opacity-50 uppercase tracking-[0.2em] text-xs" :style="{ color: 'var(--app-text)' }">
@@ -75,11 +75,11 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
       </div>
 
       <!-- Right: Custom Grid Builder -->
-      <div class="lg:col-span-8 bg-white p-8 md:p-12 rounded-[48px] shadow-2xl border-b-[8px] border-slate-100 relative group/builder">
+      <div class="lg:col-span-8 bg-white p-5 md:p-8 lg:p-12 rounded-[32px] md:rounded-[48px] shadow-2xl border-b-[8px] border-slate-100 relative group/builder">
         <!-- Decoration Background -->
         <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover/builder:opacity-100 transition-opacity duration-1000 -z-10 rounded-[48px]"></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center">
            <!-- Sliders -->
            <div class="space-y-10">
               <div class="space-y-5">

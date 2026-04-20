@@ -45,11 +45,11 @@ function handleEdit() {
 <template>
     <div class="w-full flex flex-col items-center gap-5">
     <div class="text-center space-y-1.5">
-      <h2 class="text-2xl md:text-4xl font-black text-slate-800 tracking-tight leading-tight">Hasil <span class="text-primary italic">Foto!</span></h2>
+      <h2 class="text-xl md:text-4xl font-black text-slate-800 tracking-tight leading-tight">Hasil <span class="text-primary italic">Foto!</span></h2>
       <p class="text-slate-500 font-medium tracking-tight px-4 text-xs md:text-sm">Bagaimana hasilnya? Cek dulu sebelum lanjut ya.</p>
     </div>
 
-    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-12 pt-8">
+    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-12 pt-4 md:pt-8">
       <!-- Main Result Frame -->
       <div 
          class="relative flex items-center justify-center shrink-0"
@@ -65,19 +65,19 @@ function handleEdit() {
       </div>
 
       <!-- Action Box -->
-      <div class="flex flex-col gap-6 w-full max-w-sm shrink-0">
-         <div class="bg-white p-8 md:p-10 rounded-[48px] shadow-2xl border-4 border-slate-50 space-y-8 relative overflow-hidden group/box transition-all hover:border-primary/20 text-center md:text-left">
+      <div class="flex flex-col gap-4 md:gap-6 w-full max-w-sm shrink-0 px-2 md:px-0">
+         <div class="bg-white p-5 md:p-8 lg:p-10 rounded-[36px] md:rounded-[48px] shadow-2xl border-4 border-slate-50 space-y-5 md:space-y-8 relative overflow-hidden group/box transition-all hover:border-primary/20 text-center md:text-left">
             <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-x-1/2 translate-y-[-50%] group-hover/box:scale-150 transition-all"></div>
             
             <div class="space-y-2 relative z-10">
-               <h3 class="text-2xl font-black text-slate-800 tracking-tight">Sudah Sesuai?</h3>
+               <h3 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">Sudah Sesuai?</h3>
                <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Tentukan pilihanmu...</p>
             </div>
 
             <div class="flex flex-col gap-4 relative z-10">
                <button 
                   @click="handleContinue"
-                  class="group w-full flex items-center justify-between px-8 py-5 bg-primary text-white rounded-[24px] font-black text-lg transition-all hover:bg-slate-900 active:scale-95 shadow-xl shadow-primary/20"
+                  class="group w-full flex items-center justify-between px-6 md:px-8 py-3 md:py-5 bg-primary text-white rounded-[24px] font-black text-lg transition-all hover:bg-slate-900 active:scale-95 shadow-xl shadow-primary/20"
                >
                   <span class="text-sm tracking-widest">SUDAH PAS!</span>
                   <ArrowRight class="w-6 h-6 group-hover:translate-x-2 transition-transform" />

@@ -554,7 +554,7 @@ function getFilterStyle(filter) {
 <template>
   <div class="w-full flex flex-col items-center gap-5">
     <div class="text-center space-y-1.5">
-      <h2 class="text-2xl md:text-4xl font-black text-slate-800 tracking-tight leading-tight">
+      <h2 class="text-xl md:text-4xl font-black text-slate-800 tracking-tight leading-tight">
         Simpan Hasil <span class="text-primary tracking-tighter italic underline decoration-secondary/30">Foto</span>
       </h2>
       <p class="text-slate-500 font-medium tracking-tight px-4 text-xs md:text-sm leading-relaxed max-w-xl mx-auto">
@@ -563,7 +563,7 @@ function getFilterStyle(filter) {
     </div>
 
     <!-- Desktop: items-center ensures both columns are vertically centered -->
-    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 pt-4">
+    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-5 md:gap-6 lg:gap-16 pt-2 md:pt-4">
       
       <!-- High-Res Mockup -->
       <div 
@@ -602,12 +602,12 @@ function getFilterStyle(filter) {
       </div>
 
       <!-- Action Panel -->
-      <div class="flex flex-col gap-4 w-full max-w-xs md:max-w-sm shrink-0">
-          <div class="bg-white p-5 md:p-8 rounded-[32px] shadow-2xl border-4 border-slate-50 flex flex-col gap-5 relative overflow-hidden group/panel transition-all hover:bg-slate-50/50">
+      <div class="flex flex-col gap-4 w-full max-w-xs md:max-w-sm shrink-0 px-2 md:px-0">
+          <div class="bg-white p-4 md:p-5 lg:p-8 rounded-[28px] md:rounded-[32px] shadow-2xl border-4 border-slate-50 flex flex-col gap-4 md:gap-5 relative overflow-hidden group/panel transition-all hover:bg-slate-50/50">
              <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full group-hover/panel:scale-150 transition-transform"></div>
              
              <div class="space-y-3 relative z-10 transition-transform duration-500 group-hover/panel:translate-x-1 text-center md:text-left">
-                <h3 class="text-2xl font-black text-slate-800 tracking-tight leading-tight">Siap Untuk <br><span class="text-secondary tracking-tighter uppercase italic">Disimpan?</span></h3>
+                <h3 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight leading-tight">Siap Untuk <br><span class="text-secondary tracking-tighter uppercase italic">Disimpan?</span></h3>
                 <p class="text-slate-400 font-bold text-xs leading-relaxed tracking-wide">Jika sudah pas, klik tombol di bawah untuk mengunduh fotomu.</p>
              </div>
 

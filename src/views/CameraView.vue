@@ -47,12 +47,12 @@ const dynamicScale = computed(() => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center justify-center gap-12 pt-8">
-    <div class="w-full max-w-4xl flex flex-col lg:flex-row items-center justify-between gap-12">
+  <div class="w-full flex flex-col items-center justify-center gap-6 md:gap-12 pt-4 md:pt-8">
+    <div class="w-full max-w-4xl flex flex-col lg:flex-row items-center justify-between gap-6 md:gap-12">
       <!-- Capture Section -->
       <div class="flex-1 flex flex-col items-center gap-8 w-full">
         <div class="text-center w-full space-y-3">
-          <h2 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight leading-none">Siap Untuk <span class="text-primary italic">Berpose?</span></h2>
+          <h2 class="text-2xl md:text-4xl lg:text-5xl font-black text-slate-800 tracking-tight leading-none">Siap Untuk <span class="text-primary italic">Berpose?</span></h2>
           <div class="flex flex-col items-center gap-2">
              <div class="px-5 py-1.5 bg-slate-900 text-white rounded-full font-bold text-xs uppercase tracking-widest shadow-xl">Atur Posisi</div>
              <p class="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em] animate-pulse transition-opacity">Siapkan gaya terbaikmu!</p>
