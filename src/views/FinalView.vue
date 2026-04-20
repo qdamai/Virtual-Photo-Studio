@@ -47,13 +47,30 @@ function loadImage(src) {
   })
 }
 
-// Apply CSS filter string to canvas context using CanvasFilter (Chrome 92+) or skip gracefully
-function applyFilter(ctx, filterStr) {
-  try {
-    if (filterStr && filterStr !== 'none') {
-      ctx.filter = filterStr
-    }
-  } catch(e) { /* ignore if unsupported */ }
+// Draw a photo with filter using an isolated offscreen canvas.
+// This is the ONLY reliable way to apply CSS filters in Canvas across all browsers.
+// ctx.filter on a shared canvas often conflicts with clip regions / save-restore cycles.
+async function drawPhotoWithFilter(mainCtx, img, sx, sy, sw, sh, dx, dy, dw, dh, filterStr) {
+  // 1. Draw cropped photo onto an offscreen canvas at native output size
+  const off = document.createElement('canvas')
+  off.width = dw
+  off.height = dh
+  const offCtx = off.getContext('2d')
+
+  // 2. Apply filter ONLY on offscreen canvas, before drawing
+  if (filterStr && filterStr !== 'none') {
+    try { offCtx.filter = filterStr } catch(e) { /* unsupported - skip */ }
+  }
+  offCtx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh)
+  offCtx.filter = 'none'
+
+  // 3. Composite filtered offscreen canvas onto main canvas in the right cell position
+  mainCtx.save()
+  mainCtx.beginPath()
+  mainCtx.rect(dx, dy, dw, dh)
+  mainCtx.clip()
+  mainCtx.drawImage(off, dx, dy)
+  mainCtx.restore()
 }
 
 async function generateFinal() {
@@ -154,11 +171,9 @@ async function generateFinal() {
         if (src) {
           try {
             const img = await loadImage(src)
-            // Filter support
             const filterStr = getFilterStyle(store.config.filter)
-            applyFilter(ctx, filterStr)
-            
-            // Center-crop the photo into the cell
+
+            // Center-crop the source image into the cell aspect ratio
             const imgAspect = img.naturalWidth / img.naturalHeight
             const cellAspect = cw / ch
             let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight
@@ -170,13 +185,8 @@ async function generateFinal() {
               sy = (img.naturalHeight - sh) / 2
             }
 
-            ctx.save()
-            ctx.beginPath()
-            ctx.rect(x, y, cw, ch)
-            ctx.clip()
-            ctx.drawImage(img, sx, sy, sw, sh, x, y, cw, ch)
-            ctx.restore()
-            ctx.filter = 'none'
+            // Use offscreen canvas to apply filter — reliable across all browsers
+            await drawPhotoWithFilter(ctx, img, sx, sy, sw, sh, x, y, cw, ch, filterStr)
           } catch(e) {
             console.warn('Could not draw photo', e)
           }
