@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, createApp, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePhotoboothStore } from '../store'
 import PhotoFrame from '../components/PhotoFrame.vue'
 import { Sparkles, Download } from 'lucide-vue-next'
+import * as LucideIcons from 'lucide-vue-next'
 
 const router = useRouter()
 const store = usePhotoboothStore()
@@ -44,6 +45,44 @@ function loadImage(src) {
       img2.src = src
     }
     img.src = src
+  })
+}
+
+// Render a Lucide icon to a canvas-loadable Image via SVG Blob URL
+function getLucideIconImage(iconName, color, size) {
+  return new Promise((resolve, reject) => {
+    const IconComp = LucideIcons[iconName]
+    if (!IconComp) return reject(new Error(`Icon not found: ${iconName}`))
+
+    // Mount component to temporary hidden div and read the SVG markup
+    const container = document.createElement('div')
+    container.style.position = 'fixed'
+    container.style.left = '-9999px'
+    container.style.top = '-9999px'
+    container.style.width = `${size}px`
+    container.style.height = `${size}px`
+    document.body.appendChild(container)
+
+    const app = createApp({ render: () => h(IconComp, { width: size, height: size, color, 'stroke-width': 2 }) })
+    app.mount(container)
+
+    // Give Vue one tick to render
+    setTimeout(() => {
+      const svgEl = container.querySelector('svg')
+      if (!svgEl) { app.unmount(); container.remove(); return reject(new Error('No SVG rendered')) }
+
+      // Serialize and use as Blob
+      const svgStr = new XMLSerializer().serializeToString(svgEl)
+      app.unmount()
+      container.remove()
+
+      const blob = new Blob([svgStr], { type: 'image/svg+xml' })
+      const url = URL.createObjectURL(blob)
+      const img = new Image()
+      img.onload = () => { URL.revokeObjectURL(url); resolve(img) }
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('SVG load failed')) }
+      img.src = url
+    }, 0)
   })
 }
 
@@ -126,32 +165,60 @@ async function generateFinal() {
     ctx.fillRect(0, 0, frameW, frameH)
     ctx.restore()
 
-    // --- 1b. Draw subtle pattern overlay (stripes) ---
-    if (store.config.pattern === 'stripes') {
+    // --- 1b. Draw pattern overlay matching PatternBackground.vue ---
+    const pattern = store.config.pattern
+    if (pattern && pattern !== 'none') {
       ctx.save()
-      ctx.globalAlpha = 0.07
+      ctx.globalAlpha = 0.12 // visible but subtle
       ctx.beginPath()
       ctx.roundRect(0, 0, frameW, frameH, 16)
       ctx.clip()
-      for (let xi = 0; xi < frameW; xi += 12) {
-        ctx.fillStyle = 'rgba(255,255,255,0.5)'
-        ctx.fillRect(xi, 0, 6, frameH)
-      }
-      ctx.restore()
-    } else if (store.config.pattern === 'dots') {
-      ctx.save()
-      ctx.globalAlpha = 0.07
-      ctx.beginPath()
-      ctx.roundRect(0, 0, frameW, frameH, 16)
-      ctx.clip()
-      for (let dy = 10; dy < frameH; dy += 20) {
-        for (let dx = 10; dx < frameW; dx += 20) {
+
+      if (pattern === 'stripes') {
+        // Diagonal stripes (45deg)
+        for (let i = -frameH; i < frameW + frameH; i += 15) {
+          ctx.fillStyle = 'rgba(255,255,255,0.8)'
+          ctx.save()
+          ctx.translate(i, 0)
+          ctx.fillRect(0, 0, 6, frameH * 2)
+          ctx.restore()
+        }
+      } else if (pattern === 'dots') {
+        // Dots grid
+        ctx.fillStyle = 'rgba(255,255,255,0.9)'
+        for (let dy = 12; dy < frameH; dy += 24) {
+          for (let dx = 12; dx < frameW; dx += 24) {
+            ctx.beginPath()
+            ctx.arc(dx, dy, 2.5, 0, Math.PI * 2)
+            ctx.fill()
+          }
+        }
+      } else if (pattern === 'grid') {
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)'
+        ctx.lineWidth = 1
+        for (let gx = 0; gx < frameW; gx += 40) {
+          ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, frameH); ctx.stroke()
+        }
+        for (let gy = 0; gy < frameH; gy += 40) {
+          ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(frameW, gy); ctx.stroke()
+        }
+      } else if (pattern === 'abstract') {
+        // Radial blobs
+        const drawBlob = (bx, by, r) => {
+          const g = ctx.createRadialGradient(bx, by, 0, bx, by, r)
+          g.addColorStop(0, 'rgba(255,255,255,0.5)')
+          g.addColorStop(1, 'rgba(255,255,255,0)')
+          ctx.fillStyle = g
           ctx.beginPath()
-          ctx.arc(dx, dy, 2, 0, Math.PI * 2)
-          ctx.fillStyle = 'white'
+          ctx.arc(bx, by, r, 0, Math.PI * 2)
           ctx.fill()
         }
+        drawBlob(frameW * 0.1, frameH * 0.2, Math.min(frameW, frameH) * 0.4)
+        drawBlob(frameW * 0.9, frameH * 0.8, Math.min(frameW, frameH) * 0.4)
+        drawBlob(frameW * 0.5, frameH * 0.5, Math.min(frameW, frameH) * 0.2)
       }
+
       ctx.restore()
     }
 
@@ -197,28 +264,46 @@ async function generateFinal() {
 
     // --- 3. Draw stickers ---
     for (const sticker of (store.config.stickers || [])) {
+      ctx.save()
+      ctx.translate(sticker.x, sticker.y)
+      ctx.rotate(((sticker.rotation || 0) * Math.PI) / 180)
+      const stickerScale = sticker.scale || 1
+
       if (sticker.type === 'image' && sticker.src) {
         try {
-          const img = await loadImage(sticker.src)
-          ctx.save()
-          ctx.translate(sticker.x, sticker.y)
-          ctx.rotate(((sticker.rotation || 0) * Math.PI) / 180)
-          ctx.scale(sticker.scale || 1, sticker.scale || 1)
-          const sw = 128, sh = 128
-          ctx.drawImage(img, -sw / 2, -sh / 2, sw, sh)
-          ctx.restore()
-        } catch(e) { /* skip unloadable stickers */ }
-      } else if (sticker.type === 'emoji' || (!sticker.type && typeof sticker.src === 'string' && sticker.src.length <= 4)) {
-        ctx.save()
-        ctx.translate(sticker.x, sticker.y)
-        ctx.rotate(((sticker.rotation || 0) * Math.PI) / 180)
-        ctx.scale(sticker.scale || 1, sticker.scale || 1)
-        ctx.font = '48px sans-serif'
+          // Build absolute URL so canvas can load it in production
+          const absUrl = sticker.src.startsWith('http') 
+            ? sticker.src 
+            : `${window.location.origin}${sticker.src.startsWith('/') ? '' : '/'}${sticker.src}`
+          const img = await loadImage(absUrl)
+          const sSize = 128 * stickerScale
+          ctx.drawImage(img, -sSize / 2, -sSize / 2, sSize, sSize)
+        } catch(e) { 
+          console.warn('Sticker image load failed:', sticker.src, e)
+        }
+
+      } else if (sticker.type === 'icon' && sticker.src) {
+        // Render Lucide icon via Vue mount → SVG → Blob → Image → Canvas
+        try {
+          const color = sticker.color || '#ffffff'
+          const iconSize = Math.round(48 * stickerScale)
+          const img = await getLucideIconImage(sticker.src, color, iconSize)
+          ctx.drawImage(img, -iconSize / 2, -iconSize / 2, iconSize, iconSize)
+        } catch(e) { 
+          console.warn('Icon sticker failed:', sticker.src, e)
+        }
+
+      } else if (sticker.type === 'emoji' || (typeof sticker.src === 'string')) {
+        // Emoji or text sticker
+        const emojiSize = 48 * stickerScale
+        ctx.font = `${emojiSize}px sans-serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
+        ctx.fillStyle = sticker.color || '#000000'
         ctx.fillText(sticker.src, 0, 0)
-        ctx.restore()
       }
+
+      ctx.restore()
     }
 
     // --- 4. Draw footer text ---
