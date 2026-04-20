@@ -106,18 +106,22 @@ function handleRetry() {
     </div>
 
     <!-- Centered Layout for Desktop -->
-    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24 pt-8">
+    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16 pt-8 pb-12">
       
       <!-- Final Image Result -->
-      <div class="relative group/final shrink-0">
+      <div class="relative group/final shrink-0 flex items-center justify-center">
          <div class="absolute -inset-10 bg-primary/20 blur-[80px] opacity-0 group-hover/final:opacity-100 transition-all duration-1000 rotate-12"></div>
-         <div class="relative transform transition-all duration-700 hover:scale-[1.02] hover:-rotate-1 z-10 border-8 border-white shadow-2xl overflow-hidden rounded-2xl bg-white group-hover/final:shadow-indigo-500/30">
-            <img v-if="store.finalImage" :src="store.finalImage" class="max-w-[320px] md:max-w-[400px] w-full h-auto object-contain" />
+         <div class="relative transform transition-all duration-700 hover:scale-[1.02] hover:-rotate-1 z-10 border-[6px] lg:border-8 border-white shadow-2xl overflow-hidden rounded-xl lg:rounded-2xl bg-white group-hover/final:shadow-indigo-500/30 flex items-center justify-center">
+            <img 
+               v-if="store.finalImage" 
+               :src="store.finalImage" 
+               class="max-h-[60vh] lg:max-h-[70vh] w-auto max-w-[90vw] object-contain block" 
+            />
          </div>
       </div>
 
       <!-- Interaction Panel -->
-      <div class="flex flex-col gap-6 w-full max-w-sm shrink-0">
+      <div class="flex flex-col gap-6 w-full max-w-xs md:max-w-sm shrink-0">
           <!-- Download Card -->
           <div class="bg-white p-8 md:p-10 rounded-[48px] shadow-2xl border-4 border-slate-50 flex flex-col gap-8 relative overflow-hidden group/actions transition-all hover:-translate-y-2">
              <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full z-0 group-hover/actions:scale-150 transition-transform"></div>
