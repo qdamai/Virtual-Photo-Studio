@@ -28,16 +28,17 @@ const currentStepIndex = computed(() => {
     :class="{
        'bg-slate-50 text-slate-900': store.appTheme === 'light',
        'bg-slate-950 text-slate-100': store.appTheme === 'dark',
-       'bg-background text-text': store.appTheme === 'playful'
+       'bg-[#F8F9FF] text-[#2D2E5F]': store.appTheme === 'playful'
     }"
     :style="{
-       '--card-bg': store.appTheme === 'light' ? '#ffffff' : store.appTheme === 'dark' ? '#0f172a' : 'rgba(255,255,255,0.7)',
-       '--sub-bg': store.appTheme === 'light' ? '#f1f5f9' : store.appTheme === 'dark' ? '#1e293b' : 'rgba(248,250,252,0.5)',
-       '--app-text': store.appTheme === 'light' ? '#0f172a' : store.appTheme === 'dark' ? '#f8fafc' : '#1e293b',
-       '--primary': store.appTheme === 'light' ? '#0ea5e9' : store.appTheme === 'dark' ? '#fb7185' : '#6366f1',
-       '--primary-hover': store.appTheme === 'light' ? '#0284c7' : store.appTheme === 'dark' ? '#f43f5e' : '#4f46e5',
-       '--secondary': store.appTheme === 'light' ? '#10b981' : store.appTheme === 'dark' ? '#e11d48' : '#a855f7',
-       '--ui-muted': store.appTheme === 'light' ? 'rgba(15,23,42,0.4)' : store.appTheme === 'dark' ? 'rgba(248,250,252,0.4)' : 'rgba(30,41,59,0.4)'
+       '--card-bg': store.appTheme === 'light' ? '#ffffff' : store.appTheme === 'dark' ? '#0f172a' : '#FFFFFF',
+       '--sub-bg': store.appTheme === 'light' ? '#f1f5f9' : store.appTheme === 'dark' ? '#1e293b' : '#F8F9FF',
+       '--app-text': store.appTheme === 'light' ? '#0f172a' : store.appTheme === 'dark' ? '#f8fafc' : '#2D2E5F',
+       '--app-text-muted': store.appTheme === 'light' ? '#64748b' : store.appTheme === 'dark' ? '#94a3b8' : '#7D7DA5',
+       '--primary': store.appTheme === 'light' ? '#0ea5e9' : store.appTheme === 'dark' ? '#fb7185' : '#6B66FF',
+       '--primary-hover': store.appTheme === 'light' ? '#0284c7' : store.appTheme === 'dark' ? '#f43f5e' : '#554EFF',
+       '--secondary': store.appTheme === 'light' ? '#10b981' : store.appTheme === 'dark' ? '#e11d48' : '#A7A3FF',
+       '--ui-muted': store.appTheme === 'light' ? 'rgba(15,23,42,0.4)' : store.appTheme === 'dark' ? 'rgba(248,250,252,0.4)' : 'rgba(125,125,165,0.4)'
     }"
   >
     <!-- Main Pattern Background -->

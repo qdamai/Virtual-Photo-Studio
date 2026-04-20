@@ -68,7 +68,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
           </div>
           <div class="text-left flex-1">
              <h3 class="text-base md:text-lg font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
-             <p class="text-[8px] md:text-[9px] font-bold uppercase tracking-widest opacity-50" :style="{ color: 'var(--app-text)' }">{{ layout.description }}</p>
+             <p class="text-[8px] md:text-[9px] font-bold uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">{{ layout.description }}</p>
           </div>
           <CheckCircle2 v-if="currentLayoutId === layout.id" class="ml-auto w-6 h-6 text-secondary" />
         </div>
@@ -77,7 +77,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
       <!-- Right: Custom Grid Builder -->
       <div 
         class="lg:col-span-8 p-4 md:p-6 lg:p-10 rounded-2xl md:rounded-3xl shadow-xl border-b-[4px] relative group/builder"
-        :style="{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--sub-bg)' }"
+        :style="{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--ui-muted)' }"
       >
         <!-- Decoration Background -->
         <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover/builder:opacity-100 transition-opacity duration-1000 -z-10 rounded-[48px]"></div>
@@ -87,7 +87,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
            <div class="space-y-6 md:space-y-8">
               <div class="space-y-2 md:space-y-3">
                  <div class="flex justify-between items-end">
-                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-60" :style="{ color: 'var(--app-text)' }">Kolom (Kanan-Kiri)</label>
+                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Kolom (Kanan-Kiri)</label>
                     <span class="text-3xl md:text-4xl font-black text-primary">{{ store.config.cols }}</span>
                  </div>
                  <input 
@@ -100,7 +100,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
 
               <div class="space-y-2 md:space-y-3">
                  <div class="flex justify-between items-end">
-                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-60" :style="{ color: 'var(--app-text)' }">Baris (Atas-Bawah)</label>
+                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Baris (Atas-Bawah)</label>
                     <span class="text-3xl md:text-4xl font-black text-secondary">{{ store.config.rows }}</span>
                  </div>
                  <input 
@@ -116,16 +116,16 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                  :style="{ backgroundColor: 'var(--sub-bg)', borderColor: 'var(--ui-muted)' }"
               >
                  <div class="flex justify-between items-center">
-                    <span class="text-xs font-black uppercase tracking-widest opacity-60" :style="{ color: 'var(--app-text)' }">Total Sesi Foto</span>
+                    <span class="text-xs font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Total Sesi Foto</span>
                     <span class="px-2.5 py-0.5 bg-primary text-white rounded-lg text-[9px] font-black tracking-widest shadow-sm">{{ totalPhotosSelection }} KALI</span>
                  </div>
-                 <p class="text-[10px] font-bold italic opacity-40" :style="{ color: 'var(--app-text)' }">"Buat kerangka sekreatif mungkin sesukamu!"</p>
+                 <p class="text-[10px] font-bold italic" :style="{ color: 'var(--app-text-muted)' }">"Buat kerangka sekreatif mungkin sesukamu!"</p>
               </div>
            </div>
 
            <!-- Blueprint Preview -->
            <div class="flex flex-col items-center gap-4 md:gap-6">
-              <span class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] opacity-50" :style="{ color: 'var(--app-text)' }">Blueprint Preview</span>
+              <span class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em]" :style="{ color: 'var(--app-text-muted)' }">Blueprint Preview</span>
                <div 
                  class="w-full aspect-square rounded-xl p-4 md:p-5 shadow-inner border border-black/5 dark:border-white/5 flex items-center justify-center transition-all overflow-hidden"
                  :style="{ backgroundColor: 'var(--sub-bg)' }"
@@ -144,7 +144,7 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                    >
                       <div 
                         v-for="i in Math.min(totalPhotosSelection, 64)" :key="i"
-                        class="bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-white/10 rounded-[4px] relative animate-in zoom-in duration-300"
+                        class="bg-slate-900 shadow-sm border border-primary/50 rounded-[4px] relative animate-in zoom-in duration-300"
                         :style="{ aspectRatio: `${store.cellWidth} / ${store.cellHeight}` }"
                       >
                          <div class="absolute inset-0 flex items-center justify-center opacity-10">

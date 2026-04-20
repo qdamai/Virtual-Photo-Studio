@@ -254,7 +254,7 @@ const photoFilterStyle = computed(() => {
            <button 
              v-if="props.allowRetake" 
              @click.stop="emit('retake', index)"
-             class="absolute top-2 left-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-white/40 flex items-center justify-center text-slate-800 hover:bg-white hover:text-primary transition-all transform hover:scale-110 active:scale-95 z-50 cursor-pointer"
+             class="absolute top-2 left-2 w-8 h-8 rounded-full bg-pink-100 backdrop-blur-md shadow-sm border border-pink-200 flex items-center justify-center text-pink-600 hover:bg-pink-200 transition-all transform hover:scale-110 active:scale-95 z-50 cursor-pointer"
              title="Foto Ulang Bagian Ini"
            >
               <component :is="LucideIcons['RefreshCcw']" class="w-4 h-4" />
