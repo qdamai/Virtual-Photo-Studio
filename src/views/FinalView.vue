@@ -80,11 +80,63 @@ async function generateFinal() {
     const ctx = canvas.getContext('2d')
     ctx.scale(scale, scale)
 
-    // --- 1. Draw background ---
-    ctx.fillStyle = store.config.color || '#ffffff'
+    // --- 1. Draw background (handle solid colors AND gradients) ---
+    ctx.save()
     ctx.beginPath()
     ctx.roundRect(0, 0, frameW, frameH, 16)
-    ctx.fill()
+    ctx.clip()
+
+    const colorVal = store.config.color || '#ffffff'
+    if (colorVal.includes('gradient')) {
+      // Parse linear-gradient to CanvasGradient
+      // e.g. "linear-gradient(135deg, #f5d0fe, #c4b5fd)"
+      const stops = colorVal.match(/#[0-9a-fA-F]{3,8}|rgba?\([^)]+\)/g) || ['#ffffff', '#eeeeee']
+      const angleMatch = colorVal.match(/(\d+)deg/)
+      const angle = angleMatch ? parseInt(angleMatch[1]) : 135
+      const rad = (angle * Math.PI) / 180
+      const x1 = frameW / 2 - Math.cos(rad) * frameW / 2
+      const y1 = frameH / 2 - Math.sin(rad) * frameH / 2
+      const x2 = frameW / 2 + Math.cos(rad) * frameW / 2
+      const y2 = frameH / 2 + Math.sin(rad) * frameH / 2
+      const grad = ctx.createLinearGradient(x1, y1, x2, y2)
+      stops.forEach((stop, i) => {
+        grad.addColorStop(i / (stops.length - 1), stop)
+      })
+      ctx.fillStyle = grad
+    } else {
+      ctx.fillStyle = colorVal
+    }
+    ctx.fillRect(0, 0, frameW, frameH)
+    ctx.restore()
+
+    // --- 1b. Draw subtle pattern overlay (stripes) ---
+    if (store.config.pattern === 'stripes') {
+      ctx.save()
+      ctx.globalAlpha = 0.07
+      ctx.beginPath()
+      ctx.roundRect(0, 0, frameW, frameH, 16)
+      ctx.clip()
+      for (let xi = 0; xi < frameW; xi += 12) {
+        ctx.fillStyle = 'rgba(255,255,255,0.5)'
+        ctx.fillRect(xi, 0, 6, frameH)
+      }
+      ctx.restore()
+    } else if (store.config.pattern === 'dots') {
+      ctx.save()
+      ctx.globalAlpha = 0.07
+      ctx.beginPath()
+      ctx.roundRect(0, 0, frameW, frameH, 16)
+      ctx.clip()
+      for (let dy = 10; dy < frameH; dy += 20) {
+        for (let dx = 10; dx < frameW; dx += 20) {
+          ctx.beginPath()
+          ctx.arc(dx, dy, 2, 0, Math.PI * 2)
+          ctx.fillStyle = 'white'
+          ctx.fill()
+        }
+      }
+      ctx.restore()
+    }
 
     // --- 2. Draw photos grid ---
     const photos = store.capturedPhotos
@@ -162,20 +214,32 @@ async function generateFinal() {
     // --- 4. Draw footer text ---
     const footerY = pad + rows * ch + (rows - 1) * gap
     if (store.config.text) {
-      ctx.font = `bold ${store.config.fontSize || 20}px sans-serif`
-      ctx.fillStyle = store.config.textColor || '#000000'
+      const fontSize = store.config.fontSize || 48
+      ctx.font = `900 ${fontSize}px sans-serif`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillText(store.config.text, frameW / 2, footerY + 36)
+
+      if (store.config.textGradient && store.config.textGradient.includes('gradient')) {
+        // Parse text gradient same way as background
+        const stops = store.config.textGradient.match(/#[0-9a-fA-F]{3,8}|rgba?\([^)]+\)/g) || [store.config.textColor || '#000']
+        const txtGrad = ctx.createLinearGradient(0, footerY + 16, frameW, footerY + 16 + fontSize)
+        stops.forEach((stop, i) => {
+          txtGrad.addColorStop(i / Math.max(stops.length - 1, 1), stop)
+        })
+        ctx.fillStyle = txtGrad
+      } else {
+        ctx.fillStyle = store.config.textColor || '#000000'
+      }
+      ctx.fillText(store.config.text, frameW / 2, footerY + (footerH * 0.38))
     }
 
-    // Watermark
-    ctx.font = 'bold 9px sans-serif'
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'
-    ctx.letterSpacing = '0.3em'
+    // Watermark — white with low opacity so it works on any bg
+    ctx.font = '700 10px sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText('DAME-SNAP PHOTOBOOTH', frameW / 2, footerY + 72)
+    ctx.fillText('DAME-SNAP PHOTOBOOTH', frameW / 2, footerY + (footerH * 0.75))
+
 
     // --- 5. Export ---
     store.finalImage = canvas.toDataURL('image/png')
