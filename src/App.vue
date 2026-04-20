@@ -61,7 +61,7 @@ const currentStepIndex = computed(() => {
               <circle cx="12" cy="13" r="4"></circle>
             </svg>
           </div>
-          <span class="text-base md:text-xl font-bold tracking-tight">Dame-Snap</span>
+          <span class="hidden md:inline text-base md:text-xl font-bold tracking-tight">Dame-Snap</span>
         </div>
 
       <div class="flex items-center gap-1.5 p-1 md:p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-3xl rounded-[32px] border border-white/20 shadow-xl self-center md:self-auto">
