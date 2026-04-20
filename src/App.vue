@@ -13,7 +13,8 @@ const router = useRouter()
 const store = usePhotoboothStore()
 
 const showNavigation = computed(() => {
-  return route.name !== 'splash' && route.name !== 'finish'
+  const hiddenRoutes = ['splash', 'finish', 'preview', 'final', 'download', 'camera']
+  return !hiddenRoutes.includes(route.name)
 })
 
 const currentStepIndex = computed(() => {
@@ -48,7 +49,7 @@ const currentStepIndex = computed(() => {
     />
 
     <!-- Header / Logo -->
-    <header class="fixed top-0 left-0 w-full p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 z-50">
+    <header class="fixed top-0 left-0 w-full p-2.5 md:p-5 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 z-50">
       <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4 w-full md:w-auto">
         <div 
           class="flex items-center gap-2 cursor-pointer group"
@@ -128,7 +129,7 @@ const currentStepIndex = computed(() => {
     </header>
 
     <!-- Main Content -->
-    <main class="relative z-10 pt-36 pb-48 px-4 max-w-7xl mx-auto min-h-screen flex flex-col items-center">
+    <main class="relative z-10 pt-24 pb-28 md:pt-32 md:pb-40 px-3 md:px-4 max-w-7xl mx-auto min-h-screen flex flex-col items-center">
       <router-view v-slot="{ Component }">
         <transition name="step-transition" mode="out-in">
           <component :is="Component" :key="route.name" />

@@ -12,8 +12,8 @@ const store = usePhotoboothStore()
 const dynamicScale = computed(() => {
   const cols = store.config.cols
   const rows = store.config.rows
-  const maxWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.9, 500) : 400
-  const maxHeight = typeof window !== 'undefined' ? Math.min(window.innerHeight * 0.6, 600) : 600
+  const maxWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.75, 380) : 320
+  const maxHeight = typeof window !== 'undefined' ? Math.min(window.innerHeight * 0.48, 520) : 480
 
   const fWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
   const fHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
@@ -43,10 +43,10 @@ function handleEdit() {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-10">
-    <div class="text-center space-y-2">
-      <h2 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight leading-loose">Hasil <span class="text-primary italic">Foto!</span></h2>
-      <p class="text-slate-500 font-medium tracking-tight px-4">Bagaimana hasilnya? Cek dulu sebelum lanjut ya.</p>
+    <div class="w-full flex flex-col items-center gap-5">
+    <div class="text-center space-y-1.5">
+      <h2 class="text-2xl md:text-4xl font-black text-slate-800 tracking-tight leading-tight">Hasil <span class="text-primary italic">Foto!</span></h2>
+      <p class="text-slate-500 font-medium tracking-tight px-4 text-xs md:text-sm">Bagaimana hasilnya? Cek dulu sebelum lanjut ya.</p>
     </div>
 
     <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-12 pt-8">
