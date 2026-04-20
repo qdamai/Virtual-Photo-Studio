@@ -14,11 +14,19 @@ const numPhotosNeeded = computed(() => {
 })
 
 function handleCaptured(photo) {
-  store.capturedPhotos.push(photo)
-  if (store.capturedPhotos.length >= numPhotosNeeded.value) {
+  if (store.retakeIndex !== null) {
+    store.capturedPhotos[store.retakeIndex] = photo
     setTimeout(() => {
-       router.push({ name: 'elements' })
+       store.retakeIndex = null
+       router.push({ name: 'preview' })
     }, 1000)
+  } else {
+    store.capturedPhotos.push(photo)
+    if (store.capturedPhotos.length >= numPhotosNeeded.value) {
+      setTimeout(() => {
+         router.push({ name: 'elements' })
+      }, 1000)
+    }
   }
 }
 
@@ -52,7 +60,10 @@ const dynamicScale = computed(() => {
       <!-- Capture Section -->
       <div class="flex-1 flex flex-col items-center gap-8 w-full">
         <div class="text-center w-full space-y-3">
-          <h2 class="text-2xl md:text-4xl lg:text-5xl font-black text-slate-800 tracking-tight leading-none">Siap Untuk <span class="text-primary italic">Berpose?</span></h2>
+          <h2 class="text-2xl md:text-4xl lg:text-5xl font-black text-slate-800 tracking-tight leading-none">
+            {{ store.retakeIndex !== null ? 'Foto Ulang' : 'Siap Untuk' }}
+            <span class="text-primary italic">{{ store.retakeIndex !== null ? 'Sesi Ini?' : 'Berpose?' }}</span>
+          </h2>
           <div class="flex flex-col items-center gap-2">
              <div class="px-5 py-1.5 bg-slate-900 text-white rounded-full font-bold text-xs uppercase tracking-widest shadow-xl">Atur Posisi</div>
              <p class="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em] animate-pulse transition-opacity">Siapkan gaya terbaikmu!</p>
@@ -60,26 +71,26 @@ const dynamicScale = computed(() => {
         </div>
 
         <CameraCapture 
-          :target-photos="numPhotosNeeded" 
+          :target-photos="store.retakeIndex !== null ? 1 : numPhotosNeeded" 
           @captured="handleCaptured"
           class="w-full max-w-[400px] shadow-primary/20"
         />
         
         <div class="w-full max-w-[400px] flex justify-between items-center p-6 bg-white rounded-[32px] shadow-2xl border-t-8 border-slate-50 relative overflow-hidden group">
            <!-- Glow Background Effect -->
-           <div v-if="store.capturedPhotos.length >= numPhotosNeeded" class="absolute inset-0 bg-primary/5 animate-pulse"></div>
+           <div v-if="store.capturedPhotos.length >= numPhotosNeeded && store.retakeIndex === null" class="absolute inset-0 bg-primary/5 animate-pulse"></div>
 
            <div class="flex flex-col gap-1 relative z-10 w-full text-center">
               <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Status</span>
-              <span class="text-lg font-black text-slate-800 tracking-tight transition-all" v-if="store.capturedPhotos.length < numPhotosNeeded">
-                 Memotret ({{store.capturedPhotos.length}}/{{numPhotosNeeded}})
+              <span class="text-lg font-black text-slate-800 tracking-tight transition-all" v-if="store.capturedPhotos.length < numPhotosNeeded || store.retakeIndex !== null">
+                 {{ store.retakeIndex !== null ? 'Memotret Ulang...' : `Memotret (${store.capturedPhotos.length}/${numPhotosNeeded})` }}
               </span>
               <span class="text-lg font-black text-green-500 tracking-tight flex items-center justify-center gap-2" v-else>
                  <CheckCircle2 class="w-5 h-5 animate-bounce" /> 
                  Selesai Dipotret!
               </span>
               
-              <div class="flex justify-center items-center gap-4 mt-3" v-if="store.capturedPhotos.length > 0">
+              <div class="flex justify-center items-center gap-4 mt-3" v-if="store.capturedPhotos.length > 0 && store.retakeIndex === null">
                  <button 
                   @click="handleRetry"
                   v-if="store.capturedPhotos.length < numPhotosNeeded"

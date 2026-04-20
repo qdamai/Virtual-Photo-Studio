@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { usePhotoboothStore } from '../store'
-import { Camera, CameraOff, RefreshCw, X, FlipHorizontal, Zap } from 'lucide-vue-next'
+import { Camera, CameraOff, RefreshCw, X, FlipHorizontal, Zap, SwitchCamera } from 'lucide-vue-next'
 
 const store = usePhotoboothStore()
 
@@ -23,6 +23,13 @@ const isMirrored = ref(true)
 const isFlashEnabled = ref(true)
 const countdown = ref(0)
 const capturedImages = ref([])
+const facingMode = ref('user')
+
+async function toggleFacingMode() {
+  facingMode.value = facingMode.value === 'user' ? 'environment' : 'user'
+  stopCamera()
+  await startCamera()
+}
 
 function toggleMirror() {
   isMirrored.value = !isMirrored.value
@@ -42,7 +49,7 @@ async function startCamera() {
       video: {
         width: { ideal: 1280 },
         height: { ideal: 720 },
-        facingMode: 'user'
+        facingMode: facingMode.value
       }
     }
     stream.value = await navigator.mediaDevices.getUserMedia(constraints)
@@ -267,10 +274,10 @@ const cameraHeight = computed(() => 375 / targetAspect.value)
         </button>
         
         <button 
-          @click="startCamera"
+          @click="toggleFacingMode"
           class="w-12 h-12 bg-white/20 backdrop-blur-md text-white rounded-full flex items-center justify-center border border-white/30 hover:bg-white/40 transition-all transform active:scale-95"
         >
-          <RefreshCw class="w-5 h-5" />
+          <SwitchCamera class="w-5 h-5" />
         </button>
       </div>
     </div>

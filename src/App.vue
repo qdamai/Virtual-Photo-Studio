@@ -50,7 +50,7 @@ const currentStepIndex = computed(() => {
 
     <!-- Header / Logo -->
     <!-- Header / Logo -->
-    <header class="fixed top-0 left-0 w-full px-4 py-3 md:px-6 md:py-5 flex flex-row justify-between items-center z-50">
+    <header class="fixed top-0 left-0 w-full px-4 py-3 md:px-6 md:py-5 flex flex-row justify-between items-center z-50 border-b border-black/5 dark:border-white/10 bg-white/50 dark:bg-black/20 backdrop-blur-xl">
       <!-- Logo Container -->
       <div 
         class="flex items-center gap-3 cursor-pointer group shrink-0"

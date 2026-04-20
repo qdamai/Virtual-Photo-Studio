@@ -40,13 +40,22 @@ function handleContinue() {
 function handleEdit() {
   router.push({ name: 'elements' })
 }
+
+function handleRetakeIndex(index) {
+  store.retakeIndex = index
+  router.push({ name: 'camera' })
+}
 </script>
 
 <template>
     <div class="w-full flex flex-col items-center gap-5">
-    <div class="text-center space-y-1.5">
-      <h2 class="text-xl md:text-4xl font-black text-slate-800 tracking-tight leading-tight">Hasil <span class="text-primary italic">Foto!</span></h2>
-      <p class="text-slate-500 font-medium tracking-tight px-4 text-xs md:text-sm">Bagaimana hasilnya? Cek dulu sebelum lanjut ya.</p>
+    <div class="text-center space-y-1.5 flex flex-col items-center">
+      <div class="px-5 py-1.5 bg-green-100 text-green-700 rounded-full font-black text-[10px] uppercase tracking-widest mb-2 flex items-center gap-1.5">
+         <CheckCircle2 class="w-3.5 h-3.5" />
+         <span>{{ store.capturedPhotos.length }}/{{ store.config.cols * store.config.rows }} Foto Selesai</span>
+      </div>
+      <h2 class="text-xl md:text-3xl font-black text-slate-800 tracking-tight leading-tight">Hasil <span class="text-primary italic">Foto!</span></h2>
+      <p class="text-slate-500 font-medium tracking-tight px-4 text-xs">Cek hasil seleksimu sebelum dikonversi.</p>
     </div>
 
     <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-12 pt-4 md:pt-8">
@@ -60,7 +69,7 @@ function handleEdit() {
             class="absolute top-0 left-0 transition-all duration-700 z-10"
             :style="{ transform: `scale(${dynamicScale.scale})`, transformOrigin: 'top left' }"
          >
-            <PhotoFrame :photos="store.capturedPhotos" class="shadow-2xl shadow-primary/20" />
+            <PhotoFrame :photos="store.capturedPhotos" :allowRetake="true" @retake="handleRetakeIndex" class="shadow-2xl shadow-primary/20" />
          </div>
       </div>
 
@@ -90,12 +99,12 @@ function handleEdit() {
                   <span>Edit Teks & Stiker</span>
                </button>
 
-               <button 
+                <button 
                   @click="handleRetry"
-                  class="w-full flex items-center justify-center px-8 py-4 bg-white text-slate-400 rounded-[24px] font-black text-xs uppercase tracking-widest border-2 border-slate-100 hover:text-red-500 hover:border-red-100 transition-all active:scale-95 gap-2"
+                  class="w-full flex items-center justify-center px-8 py-3 bg-white text-slate-400 rounded-[24px] font-black text-[10px] uppercase tracking-widest border border-slate-200 hover:text-red-500 hover:border-red-100 transition-all active:scale-95 gap-2"
                >
                   <RefreshCcw class="w-4 h-4" />
-                  <span>Foto Ulang</span>
+                  <span>Ulangi Seluruh Sesi</span>
                </button>
             </div>
          </div>

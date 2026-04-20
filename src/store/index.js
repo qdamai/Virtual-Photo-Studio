@@ -26,6 +26,7 @@ export const usePhotoboothStore = defineStore('photobooth', () => {
   const locale = ref('id') // id, en
   const capturedPhotos = ref([])
   const finalImage = ref(null)
+  const retakeIndex = ref(null)
 
   const translations = {
     en: {
@@ -109,6 +110,7 @@ export const usePhotoboothStore = defineStore('photobooth', () => {
     currentStep.value = 1
     capturedPhotos.value = []
     finalImage.value = null
+    retakeIndex.value = null
     Object.assign(config, {
       size: 'strip',
       layout: 'strip3',
@@ -143,6 +145,7 @@ export const usePhotoboothStore = defineStore('photobooth', () => {
     t,
     capturedPhotos,
     finalImage,
+    retakeIndex,
     steps,
     totalSteps,
     cellWidth,

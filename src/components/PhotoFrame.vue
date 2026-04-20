@@ -17,8 +17,14 @@ const props = defineProps({
   editable: {
     type: Boolean,
     default: false
+  },
+  allowRetake: {
+    type: Boolean,
+    default: false
   }
 })
+
+const emit = defineEmits(['retake'])
 
 // Auto-Decorate Feature
 
@@ -243,6 +249,16 @@ const photoFilterStyle = computed(() => {
            />
            <!-- Grain Overlay -->
            <div v-if="store.config.filter === 'grainy'" class="absolute inset-0 pointer-events-none opacity-20 mix-blend-multiply grainy-bg z-10"></div>
+           
+           <!-- Retake specific photo button -->
+           <button 
+             v-if="props.allowRetake" 
+             @click.stop="emit('retake', index)"
+             class="absolute top-2 left-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-white/40 flex items-center justify-center text-slate-800 hover:bg-white hover:text-primary transition-all transform hover:scale-110 active:scale-95 z-50 cursor-pointer"
+             title="Foto Ulang Bagian Ini"
+           >
+              <component :is="LucideIcons['RefreshCcw']" class="w-4 h-4" />
+           </button>
         </div>
         <div v-else-if="props.showPlaceholder" class="w-full h-full flex items-center justify-center" :style="{ color: '#cbd5e1' }">
            <component :is="LucideIcons['Camera']" class="w-12 h-12 opacity-50" />
