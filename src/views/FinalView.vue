@@ -17,13 +17,17 @@ const dynamicScale = computed(() => {
   const maxWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.9, 450) : 400
   const maxHeight = typeof window !== 'undefined' ? Math.min(window.innerHeight * 0.7, 700) : 700
 
-  const frameWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
-  const frameHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
+  const fWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
+  const fHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
   
-  const scaleW = maxWidth / frameWidth
-  const scaleH = maxHeight / frameHeight
+  const scaleW = maxWidth / fWidth
+  const scaleH = maxHeight / fHeight
   
-  return Math.min(scaleW, scaleH, 1)
+  return {
+    scale: Math.min(scaleW, scaleH, 1),
+    width: fWidth,
+    height: fHeight
+  }
 })
 
 async function generateFinal() {
@@ -97,16 +101,16 @@ async function generateFinal() {
       
       <!-- High-Res Mockup -->
       <div 
-        class="relative group/mockup flex items-center justify-center shrink-0"
-        :style="{ width: '100%', maxWidth: '400px', minHeight: '500px' }"
+        class="relative flex items-center justify-center shrink-0"
+        :style="{ width: `${dynamicScale.width * dynamicScale.scale}px`, height: `${dynamicScale.height * dynamicScale.scale}px` }"
       >
          <!-- Aura -->
          <div class="absolute -inset-10 bg-gradient-to-tr from-primary/10 via-secondary/10 to-transparent blur-[80px] opacity-0 group-hover/mockup:opacity-100 transition-all duration-1000"></div>
          
         <div 
           id="scaling-wrapper"
-          class="relative transform transition-all duration-700 hover:scale-[1.02] z-10 origin-center"
-          :style="{ transform: `scale(${dynamicScale})` }"
+          class="relative transition-all duration-700 hover:scale-[1.02] z-10"
+          :style="{ transform: `scale(${dynamicScale.scale})`, transformOrigin: 'top left' }"
         >
           <PhotoFrame 
             ref="frameRef" 

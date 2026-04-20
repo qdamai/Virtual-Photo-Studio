@@ -29,92 +29,100 @@ function handleRetry() {
 const dynamicScale = computed(() => {
   const cols = store.config.cols
   const rows = store.config.rows
-  const frameWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
-  const frameHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
+  const maxWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.9, 320) : 320
+  const maxHeight = typeof window !== 'undefined' ? Math.min(window.innerHeight * 0.5, 450) : 450
+
+  const fWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
+  const fHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
   
-  const scaleW = 320 / frameWidth
-  const scaleH = 600 / frameHeight
+  const scaleW = maxWidth / fWidth
+  const scaleH = maxHeight / fHeight
   
-  return Math.min(scaleW, scaleH)
+  return {
+    scale: Math.min(scaleW, scaleH, 1),
+    width: fWidth,
+    height: fHeight
+  }
 })
 </script>
 
 <template>
-  <div class="w-full flex flex-col md:flex-row items-start justify-center gap-12 pt-8">
-    <div class="flex-1 flex flex-col items-center gap-8 w-full">
-      <div class="text-left w-full space-y-4">
-        <h2 class="text-5xl md:text-6xl font-black text-slate-800 tracking-tight leading-none">Ready for <span class="text-primary italic">Action?</span></h2>
-        <div class="flex items-center gap-4">
-           <div class="px-6 py-2 bg-slate-900 text-white rounded-full font-bold text-sm uppercase tracking-widest shadow-xl">Get in position</div>
-           <p class="text-slate-400 font-bold uppercase text-xs tracking-[0.2em] animate-pulse transition-opacity">Don't forget to smile!</p>
+  <div class="w-full flex flex-col items-center justify-center gap-12 pt-8">
+    <div class="w-full max-w-4xl flex flex-col lg:flex-row items-center justify-between gap-12">
+      <!-- Capture Section -->
+      <div class="flex-1 flex flex-col items-center gap-8 w-full">
+        <div class="text-center w-full space-y-3">
+          <h2 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight leading-none">Siap Untuk <span class="text-primary italic">Berpose?</span></h2>
+          <div class="flex flex-col items-center gap-2">
+             <div class="px-5 py-1.5 bg-slate-900 text-white rounded-full font-bold text-xs uppercase tracking-widest shadow-xl">Atur Posisi</div>
+             <p class="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em] animate-pulse transition-opacity">Siapkan gaya terbaikmu!</p>
+          </div>
+        </div>
+
+        <CameraCapture 
+          :target-photos="numPhotosNeeded" 
+          @captured="handleCaptured"
+          class="w-full max-w-[400px] shadow-primary/20"
+        />
+        
+        <div class="w-full max-w-[400px] flex justify-between items-center p-6 bg-white rounded-[32px] shadow-2xl border-t-8 border-slate-50 relative overflow-hidden group">
+           <!-- Glow Background Effect -->
+           <div v-if="store.capturedPhotos.length >= numPhotosNeeded" class="absolute inset-0 bg-primary/5 animate-pulse"></div>
+
+           <div class="flex flex-col gap-1 relative z-10 w-full text-center">
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Status</span>
+              <span class="text-lg font-black text-slate-800 tracking-tight transition-all" v-if="store.capturedPhotos.length < numPhotosNeeded">
+                 Memotret ({{store.capturedPhotos.length}}/{{numPhotosNeeded}})
+              </span>
+              <span class="text-lg font-black text-green-500 tracking-tight flex items-center justify-center gap-2" v-else>
+                 <CheckCircle2 class="w-5 h-5 animate-bounce" /> 
+                 Selesai Dipotret!
+              </span>
+              
+              <div class="flex justify-center items-center gap-4 mt-3" v-if="store.capturedPhotos.length > 0">
+                 <button 
+                  @click="handleRetry"
+                  v-if="store.capturedPhotos.length < numPhotosNeeded"
+                  class="px-5 py-2 bg-slate-100 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all transform active:scale-95"
+                 >
+                  Ulangi
+                 </button>
+
+                 <button 
+                  v-if="store.capturedPhotos.length >= numPhotosNeeded"
+                  @click="router.push({ name: 'elements' })"
+                  class="group/btn w-full px-6 py-4 bg-primary text-white rounded-[20px] font-black text-xs uppercase tracking-[0.2em] shadow-[0_20px_40px_-10px_rgba(99,102,241,0.5)] hover:shadow-primary/40 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2 overflow-hidden animate-in zoom-in duration-500"
+                 >
+                  <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-full transition-all duration-700 skew-x-[-20deg]"></div>
+                  <span>LANJUT EDIT</span>
+                  <ChevronRight class="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                 </button>
+              </div>
+           </div>
         </div>
       </div>
 
-      <CameraCapture 
-        :target-photos="numPhotosNeeded" 
-        @captured="handleCaptured"
-        class="w-full max-w-2xl shadow-primary/20"
-      />
-      
-      <div class="w-full flex justify-between items-center p-8 bg-white rounded-[40px] shadow-2xl border-t-8 border-slate-50 relative overflow-hidden group">
-         <!-- Glow Background Effect -->
-         <div v-if="store.capturedPhotos.length >= numPhotosNeeded" class="absolute inset-0 bg-primary/5 animate-pulse"></div>
-
-         <div class="flex flex-col gap-1 relative z-10">
-            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Booth Control</span>
-            <span class="text-xl font-black text-slate-800 tracking-tight transition-all" v-if="store.capturedPhotos.length < numPhotosNeeded">
-               Capturing ({{store.capturedPhotos.length}}/{{numPhotosNeeded}})
-            </span>
-            <span class="text-xl font-black text-green-500 tracking-tight flex items-center gap-2" v-else>
-               <CheckCircle2 class="w-6 h-6 animate-bounce" /> 
-               Captured Successfully!
-            </span>
-         </div>
+      <!-- Live Preview Frame (Desktop Optional) -->
+      <div class="hidden lg:flex flex-col items-center gap-6 shrink-0 group">
+         <div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-2 transition-transform group-hover:-translate-y-1">Preview Langsung</div>
          
-         <div class="flex items-center gap-4 relative z-10">
-            <button 
-              @click="handleRetry"
-              v-if="store.capturedPhotos.length > 0"
-              class="px-6 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all transform active:scale-95"
-            >
-              Retry
-            </button>
-
-            <button 
-              v-if="store.capturedPhotos.length >= numPhotosNeeded"
-              @click="router.push({ name: 'elements' })"
-              class="group/btn px-10 py-5 bg-primary text-white rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_20px_40px_-10px_rgba(99,102,241,0.5)] hover:shadow-primary/40 transition-all transform hover:-translate-y-2 active:scale-95 flex items-center gap-3 overflow-hidden animate-in zoom-in duration-500"
-            >
-              <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-full transition-all duration-700 skew-x-[-20deg]"></div>
-              <span>Edit Frame</span>
-              <ChevronRight class="w-5 h-5 transition-transform group-hover/btn:translate-x-1" />
-            </button>
+         <!-- Scaling Wrapper for Responsive Preview -->
+         <div 
+          class="relative flex items-center justify-center shrink-0"
+          :style="{ width: `${dynamicScale.width * dynamicScale.scale}px`, height: `${dynamicScale.height * dynamicScale.scale}px` }"
+         >
+           <div 
+            class="absolute top-0 left-0 transition-all duration-700 ease-in-out"
+            :style="{ 
+              transform: `scale(${dynamicScale.scale})`,
+              transformOrigin: 'top left'
+            }"
+           >
+             <div class="absolute -inset-10 bg-primary/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <PhotoFrame :photos="store.capturedPhotos" class="relative z-10 shadow-2xl" />
+           </div>
          </div>
       </div>
-    </div>
-
-    <!-- Live Preview Frame -->
-    <div class="hidden lg:flex flex-col items-center gap-6 shrink-0 group">
-       <div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4 transition-transform group-hover:-translate-y-1">Live Feed Frame</div>
-       
-       <!-- Scaling Wrapper for Responsive Preview -->
-       <div 
-        class="relative flex items-start justify-center overflow-visible"
-        :style="{ 
-          width: '320px', 
-          height: '600px' 
-        }"
-       >
-         <div 
-          class="relative transition-all duration-700 ease-in-out origin-top"
-          :style="{ 
-            transform: `scale(${dynamicScale})`,
-          }"
-         >
-           <div class="absolute -inset-10 bg-primary/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-           <PhotoFrame :photos="store.capturedPhotos" class="relative z-10 shadow-2xl" />
-         </div>
-       </div>
     </div>
   </div>
 </template>

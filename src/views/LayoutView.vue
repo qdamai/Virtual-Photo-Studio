@@ -32,23 +32,23 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-16 max-w-7xl mx-auto px-4 pb-20 mt-10">
+  <div class="w-full flex flex-col items-center gap-10 max-w-7xl mx-auto px-4 pb-20 mt-10">
     <!-- Header -->
     <div class="text-center space-y-4">
-      <h2 class="text-5xl md:text-6xl font-black tracking-tighter" :style="{ color: 'var(--app-text)' }">
-        Layout <span class="text-secondary italic">Studio</span>
+      <h2 class="text-4xl md:text-5xl font-black tracking-tighter" :style="{ color: 'var(--app-text)' }">
+        Susunan <span class="text-secondary italic">Bingkai</span>
       </h2>
-      <p class="font-bold opacity-40 uppercase tracking-[0.4em] text-xs" :style="{ color: 'var(--app-text)' }">
-        From Solo to Mosaic (1x1 to 8x8)
+      <p class="font-bold opacity-50 uppercase tracking-[0.2em] text-xs" :style="{ color: 'var(--app-text)' }">
+        Pilih Preset atau Buat Kustom Sendiri
       </p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 w-full items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 w-full items-start pt-4">
       <!-- Left: Iconic Presets -->
-      <div class="lg:col-span-4 flex flex-col gap-6">
-        <div class="flex items-center gap-4 mb-4">
+      <div class="lg:col-span-4 flex flex-col gap-5">
+        <div class="flex items-center gap-4 mb-2">
            <div class="h-px flex-1 bg-slate-200"></div>
-           <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Quick Picks</span>
+           <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Pilihan Cepat</span>
            <div class="h-px flex-1 bg-slate-200"></div>
         </div>
         
@@ -56,35 +56,35 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
           v-for="layout in layouts" 
           :key="layout.id"
           @click="selectLayout(layout)"
-          class="group relative backdrop-blur-xl p-8 rounded-[40px] border-4 transition-all duration-500 transform hover:-translate-y-2 cursor-pointer flex items-center gap-6"
+          class="group relative backdrop-blur-xl p-6 rounded-[32px] border-4 transition-all duration-500 transform hover:-translate-y-1 cursor-pointer flex items-center gap-5"
           :style="{ 
              backgroundColor: 'var(--card-bg)', 
              borderColor: currentLayoutId === layout.id ? 'var(--secondary)' : 'rgba(255,255,255,0.1)' 
           }"
-          :class="currentLayoutId === layout.id ? 'shadow-2xl scale-[1.02] z-10' : 'hover:shadow-xl opacity-80 hover:opacity-100'"
+          :class="currentLayoutId === layout.id ? 'shadow-xl scale-[1.02] z-10' : 'hover:shadow-md opacity-80 hover:opacity-100'"
         >
-          <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black text-slate-800 border-2" :style="{ borderColor: 'var(--sub-bg)' }">
+          <div class="w-14 h-14 rounded-[14px] bg-slate-50 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black text-slate-800 border-2" :style="{ borderColor: 'var(--sub-bg)' }">
              {{ layout.cols }}x{{ layout.rows }}
           </div>
           <div class="text-left">
              <h3 class="text-xl font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
-             <p class="text-[9px] font-black uppercase tracking-widest opacity-40" :style="{ color: 'var(--app-text)' }">{{ layout.description }}</p>
+             <p class="text-[9px] font-bold uppercase tracking-widest opacity-50" :style="{ color: 'var(--app-text)' }">{{ layout.description }}</p>
           </div>
           <CheckCircle2 v-if="currentLayoutId === layout.id" class="ml-auto w-6 h-6 text-secondary" />
         </div>
       </div>
 
       <!-- Right: Custom Grid Builder -->
-      <div class="lg:col-span-8 bg-white p-10 md:p-16 rounded-[64px] shadow-2xl border-b-[12px] border-slate-100 relative group/builder">
+      <div class="lg:col-span-8 bg-white p-8 md:p-12 rounded-[48px] shadow-2xl border-b-[8px] border-slate-100 relative group/builder">
         <!-- Decoration Background -->
-        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover/builder:opacity-100 transition-opacity duration-1000 -z-10 rounded-[64px]"></div>
+        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover/builder:opacity-100 transition-opacity duration-1000 -z-10 rounded-[48px]"></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
            <!-- Sliders -->
-           <div class="space-y-12">
-              <div class="space-y-6">
+           <div class="space-y-10">
+              <div class="space-y-5">
                  <div class="flex justify-between items-end">
-                    <label class="text-[10px] font-black uppercase tracking-widest opacity-40">Columns (Kolom)</label>
+                    <label class="text-[10px] font-black uppercase tracking-widest opacity-40">Kolom (Kanan-Kiri)</label>
                     <span class="text-4xl font-black text-primary">{{ store.config.cols }}</span>
                  </div>
                  <input 
@@ -95,9 +95,9 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                  />
               </div>
 
-              <div class="space-y-6">
+              <div class="space-y-5">
                  <div class="flex justify-between items-end">
-                    <label class="text-[10px] font-black uppercase tracking-widest opacity-40">Rows (Baris)</label>
+                    <label class="text-[10px] font-black uppercase tracking-widest opacity-40">Baris (Atas-Bawah)</label>
                     <span class="text-4xl font-black text-secondary">{{ store.config.rows }}</span>
                  </div>
                  <input 
@@ -108,12 +108,12 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                  />
               </div>
 
-              <div class="p-6 bg-slate-50 rounded-3xl border-2 border-slate-100/50 flex flex-col gap-2">
+              <div class="p-5 bg-slate-50 rounded-2xl border-2 border-slate-100/50 flex flex-col gap-2">
                  <div class="flex justify-between items-center">
-                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total Captures</span>
-                    <span class="px-3 py-1 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-widest">{{ totalPhotosSelection }} PHOTOS</span>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total Sesi Foto</span>
+                    <span class="px-3 py-1 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-widest">{{ totalPhotosSelection }} KALI</span>
                  </div>
-                 <p class="text-[10px] font-bold text-slate-400 italic">"Go big or stay classic. The mosaic awaits."</p>
+                 <p class="text-[10px] font-bold text-slate-400 italic">"Buat kerangka sekreatif mungkin sesukamu!"</p>
               </div>
            </div>
 

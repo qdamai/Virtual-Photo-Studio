@@ -15,13 +15,17 @@ const dynamicScale = computed(() => {
   const maxWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.9, 500) : 400
   const maxHeight = typeof window !== 'undefined' ? Math.min(window.innerHeight * 0.6, 600) : 600
 
-  const frameWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
-  const frameHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
+  const fWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
+  const fHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
   
-  const scaleW = maxWidth / frameWidth
-  const scaleH = maxHeight / frameHeight
+  const scaleW = maxWidth / fWidth
+  const scaleH = maxHeight / fHeight
   
-  return Math.min(scaleW, scaleH, 1) // Do not upscale unnecessarily
+  return {
+    scale: Math.min(scaleW, scaleH, 1),
+    width: fWidth,
+    height: fHeight
+  }
 })
 
 function handleRetry() {
@@ -49,12 +53,12 @@ function handleEdit() {
       <!-- Main Result Frame -->
       <div 
          class="relative flex items-center justify-center shrink-0"
-         :style="{ width: '100%', maxWidth: '500px', minHeight: '600px' }"
+         :style="{ width: `${dynamicScale.width * dynamicScale.scale}px`, height: `${dynamicScale.height * dynamicScale.scale}px` }"
       >
          <div class="absolute -inset-10 bg-primary/10 blur-[100px] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
          <div 
-            class="transform transition-all duration-700 hover:scale-105 hover:-rotate-1 z-10 relative origin-center"
-            :style="{ transform: `scale(${dynamicScale})` }"
+            class="transition-all duration-700 hover:scale-105 z-10 relative"
+            :style="{ transform: `scale(${dynamicScale.scale})`, transformOrigin: 'top left' }"
          >
             <PhotoFrame :photos="store.capturedPhotos" class="shadow-2xl shadow-primary/20" />
          </div>

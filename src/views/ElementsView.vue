@@ -14,13 +14,17 @@ const dynamicScale = computed(() => {
   const maxWidth = typeof window !== 'undefined' ? window.innerWidth < 1024 ? window.innerWidth * 0.9 : 400 : 400
   const maxHeight = 600
 
-  const frameWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
-  const frameHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
+  const fWidth = (store.cellWidth * cols) + (10 * (cols - 1)) + 32
+  const fHeight = (store.cellHeight * rows) + (10 * (rows - 1)) + 32 + 100
   
-  const scaleW = maxWidth / frameWidth
-  const scaleH = maxHeight / frameHeight
+  const scaleW = maxWidth / fWidth
+  const scaleH = maxHeight / fHeight
   
-  return Math.min(scaleW, scaleH, 1)
+  return {
+    scale: Math.min(scaleW, scaleH, 1),
+    width: fWidth,
+    height: fHeight
+  }
 })
 
 const activeMainType = ref('stickers') // 'stickers' or 'elements'
@@ -421,27 +425,30 @@ const fontStyles = [
 
       <!-- Preview Section -->
       <div 
-         class="relative flex items-center justify-center shrink-0 w-full lg:sticky lg:top-8 h-fit lg:w-[450px] p-8 lg:p-12 rounded-[64px] border-4 border-white/20 shadow-sm transition-colors duration-500 overflow-visible"
+         class="relative flex items-center justify-center shrink-0 w-full lg:sticky lg:top-8 h-fit lg:w-fit p-8 lg:p-12 rounded-[64px] border-4 border-white/20 shadow-sm transition-colors duration-500 overflow-hidden"
         :style="{ 
-          minHeight: '700px',
           backgroundColor: 'var(--card-bg)',
           backdropFilter: 'blur(20px)'
         }"
       >
-         <div 
-          class="relative transition-all duration-1000 origin-center"
-          :style="{ 
-            transform: `scale(${dynamicScale})`,
-          }"
-         >
-            <PhotoFrame 
-              :photos="store.capturedPhotos" 
-              :editable="true"
-              class="shadow-[0_48px_100px_rgba(0,0,0,0.15)] relative z-10" 
-            />
-            
-            <div class="mt-20 text-center opacity-40">
-               <div class="text-[10px] font-black uppercase tracking-[0.6em]">Drag to Position</div>
+         <!-- Scaled bounding box -->
+         <div :style="{ width: `${dynamicScale.width * dynamicScale.scale}px`, height: `${dynamicScale.height * dynamicScale.scale}px` }" class="relative flex items-center justify-center">
+            <div 
+             class="absolute top-0 left-0 transition-all duration-1000"
+             :style="{ 
+               transform: `scale(${dynamicScale.scale})`,
+               transformOrigin: 'top left'
+             }"
+            >
+               <PhotoFrame 
+                 :photos="store.capturedPhotos" 
+                 :editable="true"
+                 class="shadow-[0_48px_100px_rgba(0,0,0,0.15)] relative z-10" 
+               />
+               
+               <div class="mt-20 text-center opacity-40">
+                  <div class="text-[10px] font-black uppercase tracking-[0.6em] text-slate-800 dark:text-white">Geser Posisi Stiker & Teks</div>
+               </div>
             </div>
          </div>
       </div>
