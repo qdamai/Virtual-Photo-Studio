@@ -86,24 +86,97 @@ function getLucideIconImage(iconName, color, size) {
   })
 }
 
-// Draw a photo with filter using an isolated offscreen canvas.
-// This is the ONLY reliable way to apply CSS filters in Canvas across all browsers.
-// ctx.filter on a shared canvas often conflicts with clip regions / save-restore cycles.
-async function drawPhotoWithFilter(mainCtx, img, sx, sy, sw, sh, dx, dy, dw, dh, filterStr) {
-  // 1. Draw cropped photo onto an offscreen canvas at native output size
+// Apply image filter via pixel manipulation — 100% reliable in ALL browsers.
+// ctx.filter CSS property is inconsistent in mobile/production environments.
+function applyPixelFilter(imageData, filterName) {
+  const d = imageData.data
+  const len = d.length
+
+  for (let i = 0; i < len; i += 4) {
+    let r = d[i], g = d[i + 1], b = d[i + 2]
+
+    if (filterName === 'mono' || filterName === 'grainy') {
+      const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b)
+      d[i] = d[i + 1] = d[i + 2] = gray
+
+    } else if (filterName === 'sepia' || filterName === 'vintage') {
+      const nr = Math.min(255, r * 0.393 + g * 0.769 + b * 0.189)
+      const ng = Math.min(255, r * 0.349 + g * 0.686 + b * 0.168)
+      const nb = Math.min(255, r * 0.272 + g * 0.534 + b * 0.131)
+      if (filterName === 'vintage') {
+        // vintage = sepia + slight darken
+        d[i] = Math.round(nr * 0.9); d[i + 1] = Math.round(ng * 0.9); d[i + 2] = Math.round(nb * 0.9)
+      } else {
+        d[i] = Math.round(nr); d[i + 1] = Math.round(ng); d[i + 2] = Math.round(nb)
+      }
+
+    } else if (filterName === 'retro') {
+      // sepia-ish + slight red/yellow tint
+      d[i]     = Math.min(255, Math.round(r * 0.5 + g * 0.4 + b * 0.1 + 40))
+      d[i + 1] = Math.min(255, Math.round(r * 0.3 + g * 0.5 + b * 0.1 + 20))
+      d[i + 2] = Math.min(255, Math.round(r * 0.2 + g * 0.2 + b * 0.5))
+
+    } else if (filterName === 'warm' || filterName === 'golden' || filterName === 'peachy' || filterName === 'sunset') {
+      d[i]     = Math.min(255, Math.round(r * 1.15))
+      d[i + 1] = Math.min(255, Math.round(g * 1.05))
+      d[i + 2] = Math.min(255, Math.round(b * 0.85))
+
+    } else if (filterName === 'cool' || filterName === 'cool-blue') {
+      d[i]     = Math.min(255, Math.round(r * 0.88))
+      d[i + 1] = Math.min(255, Math.round(g * 0.95))
+      d[i + 2] = Math.min(255, Math.round(b * 1.2))
+
+    } else if (filterName === 'bright') {
+      d[i]     = Math.min(255, Math.round(r * 1.25))
+      d[i + 1] = Math.min(255, Math.round(g * 1.25))
+      d[i + 2] = Math.min(255, Math.round(b * 1.25))
+
+    } else if (filterName === 'matte' || filterName === 'fade') {
+      // reduce contrast: push toward mid-gray
+      d[i]     = Math.round(r * 0.85 + 20)
+      d[i + 1] = Math.round(g * 0.85 + 20)
+      d[i + 2] = Math.round(b * 0.85 + 20)
+
+    } else if (filterName === 'cinematic' || filterName === 'high-contrast') {
+      // high contrast + slight desaturate
+      const gray = 0.299 * r + 0.587 * g + 0.114 * b
+      d[i]     = Math.min(255, Math.round((r - gray) * 0.7 + gray * 1.35))
+      d[i + 1] = Math.min(255, Math.round((g - gray) * 0.7 + gray * 1.35))
+      d[i + 2] = Math.min(255, Math.round((b - gray) * 0.7 + gray * 1.35))
+
+    } else if (filterName === 'soft' || filterName === 'dreamy' || filterName === 'pastel') {
+      // desaturate + brighten
+      const gray = 0.299 * r + 0.587 * g + 0.114 * b
+      d[i]     = Math.min(255, Math.round(r * 0.6 + gray * 0.4 + 15))
+      d[i + 1] = Math.min(255, Math.round(g * 0.6 + gray * 0.4 + 15))
+      d[i + 2] = Math.min(255, Math.round(b * 0.6 + gray * 0.4 + 15))
+    }
+    // 'none' or unknown: no change
+  }
+  return imageData
+}
+
+// Draw a photo with pixel-level filter applied — guaranteed cross-browser.
+async function drawPhotoWithFilter(mainCtx, img, sx, sy, sw, sh, dx, dy, dw, dh, filterName) {
+  // 1. Draw cropped photo to offscreen canvas
   const off = document.createElement('canvas')
   off.width = dw
   off.height = dh
   const offCtx = off.getContext('2d')
-
-  // 2. Apply filter ONLY on offscreen canvas, before drawing
-  if (filterStr && filterStr !== 'none') {
-    try { offCtx.filter = filterStr } catch(e) { /* unsupported - skip */ }
-  }
   offCtx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh)
-  offCtx.filter = 'none'
 
-  // 3. Composite filtered offscreen canvas onto main canvas in the right cell position
+  // 2. Apply pixel filter if needed
+  if (filterName && filterName !== 'none') {
+    try {
+      const imageData = offCtx.getImageData(0, 0, dw, dh)
+      applyPixelFilter(imageData, filterName)
+      offCtx.putImageData(imageData, 0, 0)
+    } catch (e) {
+      console.warn('Pixel filter failed, drawing unfiltered:', e)
+    }
+  }
+
+  // 3. Draw filtered result to main canvas
   mainCtx.save()
   mainCtx.beginPath()
   mainCtx.rect(dx, dy, dw, dh)
@@ -238,7 +311,7 @@ async function generateFinal() {
         if (src) {
           try {
             const img = await loadImage(src)
-            const filterStr = getFilterStyle(store.config.filter)
+            const filterName = store.config.filter || 'none'
 
             // Center-crop the source image into the cell aspect ratio
             const imgAspect = img.naturalWidth / img.naturalHeight
@@ -253,7 +326,7 @@ async function generateFinal() {
             }
 
             // Use offscreen canvas to apply filter — reliable across all browsers
-            await drawPhotoWithFilter(ctx, img, sx, sy, sw, sh, x, y, cw, ch, filterStr)
+            await drawPhotoWithFilter(ctx, img, sx, sy, sw, sh, x, y, cw, ch, filterName)
           } catch(e) {
             console.warn('Could not draw photo', e)
           }
