@@ -65,13 +65,13 @@ const currentStepIndex = computed(() => {
         </div>
 
       <div class="flex items-center gap-1.5 p-1 md:p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-3xl rounded-[32px] border border-white/20 shadow-xl self-center md:self-auto">
-        <!-- Language Switcher -->
-        <div class="flex gap-1 pr-2 border-r border-white/20 mr-1 ml-1">
+        <!-- Language Switcher - min 44px touch target via py on pill wrapper -->
+        <div class="flex gap-0.5 pr-2 border-r border-white/20 mr-1 ml-1">
            <button 
              v-for="lang in ['id', 'en']" 
              :key="lang"
              @click="store.locale = lang"
-             class="w-7 h-7 md:w-10 md:h-10 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center relative overflow-hidden group"
+             class="min-w-[44px] min-h-[44px] md:w-10 md:h-10 md:min-w-0 md:min-h-0 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center relative overflow-hidden group"
              :class="store.locale === lang ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-lg' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
              {{ lang }}
@@ -92,7 +92,7 @@ const currentStepIndex = computed(() => {
            
            <button 
              @click="store.appTheme = 'playful'"
-             class="w-6 h-6 md:w-9 md:h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
+             class="min-w-[44px] min-h-[44px] md:w-9 md:h-9 md:min-w-0 md:min-h-0 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
              :class="store.appTheme === 'playful' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
              <Sparkles class="w-3 h-3 md:w-4 md:h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
@@ -100,7 +100,7 @@ const currentStepIndex = computed(() => {
 
            <button 
              @click="store.appTheme = 'light'"
-             class="w-6 h-6 md:w-9 md:h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
+             class="min-w-[44px] min-h-[44px] md:w-9 md:h-9 md:min-w-0 md:min-h-0 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
              :class="store.appTheme === 'light' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
              <Sun class="w-3 h-3 md:w-4 md:h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
@@ -108,7 +108,7 @@ const currentStepIndex = computed(() => {
 
            <button 
              @click="store.appTheme = 'dark'"
-             class="w-6 h-6 md:w-9 md:h-9 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
+             class="min-w-[44px] min-h-[44px] md:w-9 md:h-9 md:min-w-0 md:min-h-0 flex items-center justify-center relative z-10 transition-all duration-500 active:scale-95"
              :class="store.appTheme === 'dark' ? 'text-white' : 'text-slate-500 opacity-60 hover:opacity-100'"
            >
              <Moon class="w-3 h-3 md:w-4 md:h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
