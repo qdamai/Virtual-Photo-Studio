@@ -56,36 +56,39 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
           v-for="layout in layouts" 
           :key="layout.id"
           @click="selectLayout(layout)"
-          class="group relative backdrop-blur-xl p-6 rounded-[32px] border-4 transition-all duration-500 transform hover:-translate-y-1 cursor-pointer flex items-center gap-5"
+          class="group relative backdrop-blur-xl p-4 md:p-6 rounded-[24px] md:rounded-[32px] border-2 md:border-4 transition-all duration-500 transform hover:-translate-y-1 cursor-pointer flex items-center gap-4 md:gap-5"
           :style="{ 
              backgroundColor: 'var(--card-bg)', 
              borderColor: currentLayoutId === layout.id ? 'var(--secondary)' : 'rgba(255,255,255,0.1)' 
           }"
           :class="currentLayoutId === layout.id ? 'shadow-xl scale-[1.02] z-10' : 'hover:shadow-md opacity-80 hover:opacity-100'"
         >
-          <div class="w-14 h-14 rounded-[14px] bg-slate-50 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black text-slate-800 border-2" :style="{ borderColor: 'var(--sub-bg)' }">
+          <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-[14px] bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black border border-slate-200 dark:border-slate-700" :style="{ color: 'var(--app-text)' }">
              {{ layout.cols }}x{{ layout.rows }}
           </div>
           <div class="text-left">
-             <h3 class="text-xl font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
-             <p class="text-[9px] font-bold uppercase tracking-widest opacity-50" :style="{ color: 'var(--app-text)' }">{{ layout.description }}</p>
+             <h3 class="text-lg md:text-xl font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
+             <p class="text-[8px] md:text-[9px] font-bold uppercase tracking-widest opacity-50" :style="{ color: 'var(--app-text)' }">{{ layout.description }}</p>
           </div>
           <CheckCircle2 v-if="currentLayoutId === layout.id" class="ml-auto w-6 h-6 text-secondary" />
         </div>
       </div>
 
       <!-- Right: Custom Grid Builder -->
-      <div class="lg:col-span-8 bg-white p-5 md:p-8 lg:p-12 rounded-[32px] md:rounded-[48px] shadow-2xl border-b-[8px] border-slate-100 relative group/builder">
+      <div 
+        class="lg:col-span-8 p-5 md:p-8 lg:p-12 rounded-[32px] md:rounded-[48px] shadow-2xl border-b-[8px] relative group/builder"
+        :style="{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--sub-bg)' }"
+      >
         <!-- Decoration Background -->
         <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover/builder:opacity-100 transition-opacity duration-1000 -z-10 rounded-[48px]"></div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center">
            <!-- Sliders -->
-           <div class="space-y-10">
-              <div class="space-y-5">
+           <div class="space-y-6 md:space-y-8">
+              <div class="space-y-2 md:space-y-3">
                  <div class="flex justify-between items-end">
-                    <label class="text-[10px] font-black uppercase tracking-widest opacity-40">Kolom (Kanan-Kiri)</label>
-                    <span class="text-4xl font-black text-primary">{{ store.config.cols }}</span>
+                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-60" :style="{ color: 'var(--app-text)' }">Kolom (Kanan-Kiri)</label>
+                    <span class="text-3xl md:text-4xl font-black text-primary">{{ store.config.cols }}</span>
                  </div>
                  <input 
                    type="range" min="1" max="8" step="1" 
@@ -95,10 +98,10 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                  />
               </div>
 
-              <div class="space-y-5">
+              <div class="space-y-2 md:space-y-3">
                  <div class="flex justify-between items-end">
-                    <label class="text-[10px] font-black uppercase tracking-widest opacity-40">Baris (Atas-Bawah)</label>
-                    <span class="text-4xl font-black text-secondary">{{ store.config.rows }}</span>
+                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-60" :style="{ color: 'var(--app-text)' }">Baris (Atas-Bawah)</label>
+                    <span class="text-3xl md:text-4xl font-black text-secondary">{{ store.config.rows }}</span>
                  </div>
                  <input 
                    type="range" min="1" max="8" step="1" 
@@ -108,20 +111,24 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
                  />
               </div>
 
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1.5">
+              <div 
+                 class="p-4 rounded-xl border flex flex-col gap-1.5"
+                 :style="{ backgroundColor: 'var(--sub-bg)', borderColor: 'var(--ui-muted)' }"
+              >
                  <div class="flex justify-between items-center">
-                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total Sesi Foto</span>
-                    <span class="px-2.5 py-0.5 bg-slate-800 text-white rounded-lg text-[9px] font-black tracking-widest">{{ totalPhotosSelection }} KALI</span>
+                    <span class="text-xs font-black uppercase tracking-widest opacity-60" :style="{ color: 'var(--app-text)' }">Total Sesi Foto</span>
+                    <span class="px-2.5 py-0.5 bg-primary text-white rounded-lg text-[9px] font-black tracking-widest shadow-sm">{{ totalPhotosSelection }} KALI</span>
                  </div>
-                 <p class="text-[10px] font-bold text-slate-400 italic">"Buat kerangka sekreatif mungkin sesukamu!"</p>
+                 <p class="text-[10px] font-bold italic opacity-40" :style="{ color: 'var(--app-text)' }">"Buat kerangka sekreatif mungkin sesukamu!"</p>
               </div>
            </div>
 
            <!-- Blueprint Preview -->
-           <div class="flex flex-col items-center gap-6">
-              <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Blueprint Preview</span>
+           <div class="flex flex-col items-center gap-4 md:gap-6">
+              <span class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] opacity-50" :style="{ color: 'var(--app-text)' }">Blueprint Preview</span>
               <div 
-                class="w-full aspect-square bg-slate-100 rounded-2xl p-5 shadow-inner border-2 border-white flex items-center justify-center transition-all group-hover/builder:bg-white overflow-hidden"
+                class="w-full aspect-square rounded-2xl p-4 md:p-5 shadow-inner border border-white/10 flex items-center justify-center transition-all overflow-hidden"
+                :style="{ backgroundColor: 'var(--sub-bg)' }"
               >
                  <div class="w-full h-full flex items-center justify-center p-2">
                    <div 
