@@ -185,6 +185,157 @@ async function drawPhotoWithFilter(mainCtx, img, sx, sy, sw, sh, dx, dy, dw, dh,
   mainCtx.restore()
 }
 
+// Helper: draw an SVG string as a tiled pattern across the canvas
+async function tileSvgPattern(ctx, svgStr, tileW, tileH, canvasW, canvasH) {
+  const blob = new Blob([svgStr], { type: 'image/svg+xml' })
+  const url = URL.createObjectURL(blob)
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      for (let ty = 0; ty < canvasH; ty += tileH) {
+        for (let tx = 0; tx < canvasW; tx += tileW) {
+          ctx.drawImage(img, tx, ty, tileW, tileH)
+        }
+      }
+      URL.revokeObjectURL(url)
+      resolve()
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); resolve() }
+    img.src = url
+  })
+}
+
+// Draw all 19 pattern types onto the canvas — matches PatternBackground.vue visually
+async function drawCanvasPattern(ctx, pattern, frameW, frameH) {
+  if (!pattern || pattern === 'none') return
+
+  ctx.save()
+  ctx.globalAlpha = 0.18
+  ctx.beginPath()
+  ctx.roundRect(0, 0, frameW, frameH, 16)
+  ctx.clip()
+  ctx.fillStyle = 'rgba(255,255,255,1)'
+  ctx.strokeStyle = 'rgba(255,255,255,1)'
+
+  const W = frameW, H = frameH
+
+  if (pattern === 'dots') {
+    for (let dy = 10; dy < H; dy += 20) {
+      for (let dx = 10; dx < W; dx += 20) {
+        ctx.beginPath(); ctx.arc(dx, dy, 2, 0, Math.PI * 2); ctx.fill()
+      }
+    }
+  } else if (pattern === 'dots-lg') {
+    for (let dy = 15; dy < H; dy += 30) {
+      for (let dx = 15; dx < W; dx += 30) {
+        ctx.beginPath(); ctx.arc(dx, dy, 6, 0, Math.PI * 2); ctx.fill()
+      }
+    }
+  } else if (pattern === 'grid') {
+    ctx.lineWidth = 1
+    for (let gx = 0; gx < W; gx += 20) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke() }
+    for (let gy = 0; gy < H; gy += 20) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke() }
+  } else if (pattern === 'stripes') {
+    ctx.lineWidth = 2
+    for (let i = -H; i < W + H; i += 10) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + H, H); ctx.stroke()
+    }
+  } else if (pattern === 'v-stripes') {
+    for (let gx = 0; gx < W; gx += 20) { ctx.fillRect(gx, 0, 10, H) }
+  } else if (pattern === 'h-stripes') {
+    for (let gy = 0; gy < H; gy += 20) { ctx.fillRect(0, gy, W, 10) }
+  } else if (pattern === 'diagonal-thin') {
+    ctx.lineWidth = 1
+    for (let i = -H; i < W + H; i += 8) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + H, H); ctx.stroke()
+    }
+  } else if (pattern === 'checkered-sm' || pattern === 'gingham') {
+    const sz = 16
+    for (let row = 0; row * sz < H; row++) {
+      for (let col = 0; col * sz < W; col++) {
+        if ((row + col) % 2 === 0) ctx.fillRect(col * sz, row * sz, sz, sz)
+      }
+    }
+  } else if (pattern === 'zigzag') {
+    ctx.lineWidth = 2
+    const zSize = 25
+    for (let gy = 0; gy < H; gy += zSize) {
+      ctx.beginPath()
+      for (let gx = 0; gx < W; gx += zSize) {
+        const yOff = (Math.floor(gx / zSize) % 2 === 0) ? gy : gy + zSize / 2
+        if (gx === 0) ctx.moveTo(gx, yOff); else ctx.lineTo(gx, yOff)
+      }
+      ctx.stroke()
+    }
+  } else if (pattern === 'waves') {
+    ctx.lineWidth = 1.5
+    for (let gy = 10; gy < H; gy += 20) {
+      ctx.beginPath()
+      for (let gx = 0; gx < W; gx += 1) {
+        const y = gy + Math.sin(gx / 8) * 4
+        if (gx === 0) ctx.moveTo(gx, y); else ctx.lineTo(gx, y)
+      }
+      ctx.stroke()
+    }
+  } else if (pattern === 'bubbles') {
+    for (let dy = 20; dy < H; dy += 40) {
+      for (let dx = 20; dx < W; dx += 40) {
+        ctx.beginPath(); ctx.arc(dx, dy, 6, 0, Math.PI * 2); ctx.fill()
+        ctx.beginPath(); ctx.arc(dx + 20, dy + 20, 2, 0, Math.PI * 2); ctx.fill()
+      }
+    }
+  } else if (pattern === 'crosses') {
+    for (let dy = 10; dy < H; dy += 20) {
+      for (let dx = 10; dx < W; dx += 20) {
+        ctx.fillRect(dx - 5, dy - 1, 10, 2)
+        ctx.fillRect(dx - 1, dy - 5, 2, 10)
+      }
+    }
+  } else if (pattern === 'hexagon') {
+    const hW = 40, hH = 35
+    ctx.lineWidth = 1
+    for (let row = 0; row * hH < H + hH; row++) {
+      for (let col = 0; col * hW < W + hW; col++) {
+        const xOff = row % 2 === 0 ? 0 : hW / 2
+        const cx2 = col * hW + xOff, cy2 = row * hH
+        ctx.beginPath()
+        for (let a = 0; a < 6; a++) {
+          const angle = (Math.PI / 3) * a - Math.PI / 6
+          const px = cx2 + 18 * Math.cos(angle), py = cy2 + 18 * Math.sin(angle)
+          a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)
+        }
+        ctx.closePath(); ctx.stroke()
+      }
+    }
+  } else if (pattern === 'abstract') {
+    const drawBlob = (bx, by, r) => {
+      const g = ctx.createRadialGradient(bx, by, 0, bx, by, r)
+      g.addColorStop(0, 'rgba(255,255,255,0.6)'); g.addColorStop(1, 'rgba(255,255,255,0)')
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.fill()
+    }
+    ctx.fillStyle = 'rgba(255,255,255,1)'
+    drawBlob(W * 0.1, H * 0.15, Math.min(W, H) * 0.45)
+    drawBlob(W * 0.9, H * 0.85, Math.min(W, H) * 0.45)
+    drawBlob(W * 0.5, H * 0.5, Math.min(W, H) * 0.2)
+
+  // SVG-based symbol patterns
+  } else if (pattern === 'hearts-sm') {
+    await tileSvgPattern(ctx, `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`, 32, 32, W, H)
+  } else if (pattern === 'sparkles') {
+    await tileSvgPattern(ctx, `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 1L9 9L1 12L9 15L12 23L15 15L23 12L15 9L12 1Z"/></svg>`, 24, 24, W, H)
+  } else if (pattern === 'flowers') {
+    await tileSvgPattern(ctx, `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="6" rx="3" ry="4"/><ellipse cx="12" cy="18" rx="3" ry="4"/><ellipse cx="6" cy="12" rx="4" ry="3"/><ellipse cx="18" cy="12" rx="4" ry="3"/></svg>`, 40, 40, W, H)
+  } else if (pattern === 'smileys') {
+    await tileSvgPattern(ctx, `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="white"/><circle cx="15" cy="9" r="1" fill="white"/></svg>`, 36, 36, W, H)
+  } else if (pattern === 'cherries') {
+    await tileSvgPattern(ctx, `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="white"><circle cx="6" cy="18" r="4"/><circle cx="18" cy="18" r="4"/><path d="M6 14 Q12 4 18 14" fill="none" stroke="white" stroke-width="2"/></svg>`, 40, 40, W, H)
+  } else if (pattern === 'clouds') {
+    await tileSvgPattern(ctx, `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="32" viewBox="0 0 50 32" fill="white"><ellipse cx="25" cy="24" rx="18" ry="8"/><circle cx="16" cy="20" r="8"/><circle cx="30" cy="16" r="10"/><circle cx="22" cy="14" r="8"/></svg>`, 50, 32, W, H)
+  }
+
+  ctx.restore()
+}
+
 async function generateFinal() {
   if (isGenerating.value) return
   isGenerating.value = true
@@ -238,62 +389,8 @@ async function generateFinal() {
     ctx.fillRect(0, 0, frameW, frameH)
     ctx.restore()
 
-    // --- 1b. Draw pattern overlay matching PatternBackground.vue ---
-    const pattern = store.config.pattern
-    if (pattern && pattern !== 'none') {
-      ctx.save()
-      ctx.globalAlpha = 0.12 // visible but subtle
-      ctx.beginPath()
-      ctx.roundRect(0, 0, frameW, frameH, 16)
-      ctx.clip()
-
-      if (pattern === 'stripes') {
-        // Diagonal stripes (45deg)
-        for (let i = -frameH; i < frameW + frameH; i += 15) {
-          ctx.fillStyle = 'rgba(255,255,255,0.8)'
-          ctx.save()
-          ctx.translate(i, 0)
-          ctx.fillRect(0, 0, 6, frameH * 2)
-          ctx.restore()
-        }
-      } else if (pattern === 'dots') {
-        // Dots grid
-        ctx.fillStyle = 'rgba(255,255,255,0.9)'
-        for (let dy = 12; dy < frameH; dy += 24) {
-          for (let dx = 12; dx < frameW; dx += 24) {
-            ctx.beginPath()
-            ctx.arc(dx, dy, 2.5, 0, Math.PI * 2)
-            ctx.fill()
-          }
-        }
-      } else if (pattern === 'grid') {
-        // Grid lines
-        ctx.strokeStyle = 'rgba(255,255,255,0.6)'
-        ctx.lineWidth = 1
-        for (let gx = 0; gx < frameW; gx += 40) {
-          ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, frameH); ctx.stroke()
-        }
-        for (let gy = 0; gy < frameH; gy += 40) {
-          ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(frameW, gy); ctx.stroke()
-        }
-      } else if (pattern === 'abstract') {
-        // Radial blobs
-        const drawBlob = (bx, by, r) => {
-          const g = ctx.createRadialGradient(bx, by, 0, bx, by, r)
-          g.addColorStop(0, 'rgba(255,255,255,0.5)')
-          g.addColorStop(1, 'rgba(255,255,255,0)')
-          ctx.fillStyle = g
-          ctx.beginPath()
-          ctx.arc(bx, by, r, 0, Math.PI * 2)
-          ctx.fill()
-        }
-        drawBlob(frameW * 0.1, frameH * 0.2, Math.min(frameW, frameH) * 0.4)
-        drawBlob(frameW * 0.9, frameH * 0.8, Math.min(frameW, frameH) * 0.4)
-        drawBlob(frameW * 0.5, frameH * 0.5, Math.min(frameW, frameH) * 0.2)
-      }
-
-      ctx.restore()
-    }
+    // --- 1b. Draw pattern overlay — covers all 19 pattern types ---
+    await drawCanvasPattern(ctx, store.config.pattern, frameW, frameH)
 
     // --- 2. Draw photos grid ---
     const photos = store.capturedPhotos
