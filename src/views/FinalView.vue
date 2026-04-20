@@ -233,13 +233,26 @@ async function generateFinal() {
       ctx.fillText(store.config.text, frameW / 2, footerY + (footerH * 0.38))
     }
 
-    // Watermark — white with low opacity so it works on any bg
-    ctx.font = '700 10px sans-serif'
-    ctx.fillStyle = 'rgba(255,255,255,0.45)'
+    // ─── WATERMARK (PERMANENT — BAKED INTO PNG) ───────────────────────
+    // Double-layer: dark shadow + light text → visible on ANY background
+    const wmText = 'dame-snap.vercel.app'
+    const wmY = footerY + (footerH * 0.78)
+
+    ctx.save()
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText('DAME-SNAP PHOTOBOOTH', frameW / 2, footerY + (footerH * 0.75))
+    ctx.font = '700 11px sans-serif'
 
+    // Layer 1 — dark shadow (readable on light bg)
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'
+    ctx.fillText(wmText, frameW / 2 + 0.5, wmY + 0.5)
+
+    // Layer 2 — white text (readable on dark bg)
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'
+    ctx.fillText(wmText, frameW / 2, wmY)
+
+    ctx.restore()
+    // ──────────────────────────────────────────────────────────────────
 
     // --- 5. Export ---
     store.finalImage = canvas.toDataURL('image/png')
