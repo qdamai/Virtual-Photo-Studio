@@ -33,6 +33,7 @@ const currentLayoutId = computed(() => {
 })
 
 const totalPhotosSelection = computed(() => store.config.cols * store.config.rows)
+const activeTab = ref(store.config.layout === 'custom' ? 'custom' : 'preset')
 </script>
 
 <template>
@@ -47,120 +48,151 @@ const totalPhotosSelection = computed(() => store.config.cols * store.config.row
       </p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 w-full items-start pt-4">
-      <!-- Left: Iconic Presets -->
-      <div class="lg:col-span-4 flex flex-col gap-5">
-        <div class="flex items-center gap-4 mb-2">
-           <div class="h-px flex-1 bg-slate-200"></div>
-           <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Pilihan Cepat</span>
-           <div class="h-px flex-1 bg-slate-200"></div>
-        </div>
-        
-        <div 
-          v-for="layout in layouts" 
-          :key="layout.id"
-          @click="selectLayout(layout)"
-          class="group relative backdrop-blur-xl p-3 md:p-5 rounded-xl md:rounded-2xl border transition-all duration-500 transform hover:-translate-y-1 cursor-pointer flex items-center gap-4 align-middle"
-          :style="{ 
-             backgroundColor: 'var(--card-bg)', 
-             borderColor: currentLayoutId === layout.id ? 'var(--secondary)' : 'var(--ui-muted)'
-          }"
-          :class="currentLayoutId === layout.id ? 'shadow-xl scale-[1.02] z-10' : 'hover:shadow-md opacity-80 hover:opacity-100'"
-        >
-          <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black border border-slate-200 dark:border-slate-700" :style="{ color: 'var(--app-text)' }">
-             {{ layout.cols }}x{{ layout.rows }}
-          </div>
-          <div class="text-left flex-1">
-             <h3 class="text-base md:text-lg font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
-             <p class="text-[8px] md:text-[9px] font-bold uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">{{ layout.description }}</p>
-          </div>
-          <CheckCircle2 v-if="currentLayoutId === layout.id" class="ml-auto w-6 h-6 text-secondary" />
-        </div>
-      </div>
-
-      <!-- Right: Custom Grid Builder -->
-      <div 
-        class="lg:col-span-8 p-4 md:p-6 lg:p-10 rounded-2xl md:rounded-3xl shadow-xl border-b-[4px] relative group/builder"
-        :style="{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--ui-muted)' }"
+    <!-- Horizontal Tab Navigation -->
+    <div class="flex gap-4 border-b-2 border-slate-200/50 dark:border-white/10 mb-4 w-full justify-center">
+      <button 
+        @click="activeTab = 'preset'"
+        class="pb-3 text-xs md:text-sm font-black uppercase tracking-widest transition-all relative shrink-0"
+        :class="activeTab === 'preset' ? 'text-primary' : 'opacity-40 hover:opacity-100'"
+        :style="{ color: activeTab === 'preset' ? 'var(--primary)' : 'var(--app-text)' }"
       >
-        <!-- Decoration Background -->
-        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover/builder:opacity-100 transition-opacity duration-1000 -z-10 rounded-[48px]"></div>
+        Preset Populer
+        <div v-if="activeTab === 'preset'" class="absolute bottom-[-2px] inset-x-0 h-1 bg-primary rounded-full"></div>
+      </button>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center">
-           <!-- Sliders -->
-           <div class="space-y-6 md:space-y-8">
-              <div class="space-y-2 md:space-y-3">
-                 <div class="flex justify-between items-end">
-                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Kolom (Kanan-Kiri)</label>
-                    <span class="text-3xl md:text-4xl font-black text-primary">{{ store.config.cols }}</span>
-                 </div>
-                 <input 
-                   type="range" min="1" max="8" step="1" 
-                   v-model.number="store.config.cols"
-                   @input="store.config.layout = 'custom'"
-                   class="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary" 
-                 />
-              </div>
+      <button 
+        @click="activeTab = 'custom'"
+        class="pb-3 text-xs md:text-sm font-black uppercase tracking-widest transition-all relative shrink-0"
+        :class="activeTab === 'custom' ? 'text-primary' : 'opacity-40 hover:opacity-100'"
+        :style="{ color: activeTab === 'custom' ? 'var(--primary)' : 'var(--app-text)' }"
+      >
+        Buat Kustom
+        <div v-if="activeTab === 'custom'" class="absolute bottom-[-2px] inset-x-0 h-1 bg-primary rounded-full"></div>
+      </button>
+    </div>
 
-              <div class="space-y-2 md:space-y-3">
-                 <div class="flex justify-between items-end">
-                    <label class="text-[9px] md:text-[10px] font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Baris (Atas-Bawah)</label>
-                    <span class="text-3xl md:text-4xl font-black text-secondary">{{ store.config.rows }}</span>
-                 </div>
-                 <input 
-                   type="range" min="1" max="8" step="1" 
-                   v-model.number="store.config.rows"
-                   @input="store.config.layout = 'custom'"
-                   class="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-secondary" 
-                 />
-              </div>
-
-              <div 
-                 class="p-4 rounded-xl border flex flex-col gap-1.5"
-                 :style="{ backgroundColor: 'var(--sub-bg)', borderColor: 'var(--ui-muted)' }"
-              >
-                 <div class="flex justify-between items-center">
-                    <span class="text-xs font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Total Sesi Foto</span>
-                    <span class="px-2.5 py-0.5 bg-primary text-white rounded-lg text-[9px] font-black tracking-widest shadow-sm">{{ totalPhotosSelection }} KALI</span>
-                 </div>
-                 <p class="text-[10px] font-bold italic" :style="{ color: 'var(--app-text-muted)' }">"Buat kerangka sekreatif mungkin sesukamu!"</p>
-              </div>
-           </div>
-
-           <!-- Blueprint Preview -->
-           <div class="flex flex-col items-center gap-4 md:gap-6">
-              <span class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em]" :style="{ color: 'var(--app-text-muted)' }">Blueprint Preview</span>
-               <div 
-                 class="w-full aspect-square rounded-xl p-4 md:p-5 shadow-inner border border-black/5 dark:border-white/5 flex items-center justify-center transition-all overflow-hidden"
-                 :style="{ backgroundColor: 'var(--sub-bg)' }"
-               >
-                 <div class="w-full h-full flex items-center justify-center p-2">
-                   <div 
-                     class="grid gap-2 transition-all duration-700 max-w-full max-h-full"
-                     :style="{ 
-                        gridTemplateColumns: `repeat(${store.config.cols}, 1fr)`,
-                        gridTemplateRows: `repeat(${store.config.rows}, 1fr)`,
-                        width: (store.config.cols * store.cellWidth) > (store.config.rows * store.cellHeight) ? '100%' : 'auto',
-                        height: (store.config.rows * store.cellHeight) >= (store.config.cols * store.cellWidth) ? '100%' : 'auto',
-                        aspectRatio: `${store.config.cols * store.cellWidth} / ${store.config.rows * store.cellHeight}`,
-                        borderRadius: '12px'
-                     }"
-                   >
-                      <div 
-                        v-for="i in Math.min(totalPhotosSelection, 64)" :key="i"
-                        class="bg-slate-900 shadow-sm border border-primary/50 rounded-[4px] relative animate-in zoom-in duration-300"
-                        :style="{ aspectRatio: `${store.cellWidth} / ${store.cellHeight}` }"
-                      >
-                         <div class="absolute inset-0 flex items-center justify-center opacity-10">
-                            <div class="w-2 h-2 rounded-full border border-current"></div>
-                         </div>
-                      </div>
-                   </div>
-                 </div>
-              </div>
-           </div>
+    <!-- Main Content Area -->
+    <div class="w-full flex-1 transition-all duration-500">
+      
+      <!-- TAB 1: PRESETS -->
+      <transition name="fade" mode="out-in">
+        <div v-if="activeTab === 'preset'" class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 w-full pb-10">
+          <div 
+            v-for="layout in layouts" 
+            :key="layout.id"
+            @click="selectLayout(layout); activeTab = 'preset'"
+            class="group relative p-4 md:p-6 rounded-[24px] border transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex items-center gap-4 align-middle"
+            :style="{ 
+               backgroundColor: 'var(--card-bg)', 
+               borderColor: currentLayoutId === layout.id ? 'var(--primary)' : 'transparent',
+               boxShadow: currentLayoutId === layout.id ? '0 20px 40px -15px var(--primary)' : '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+            }"
+            :class="currentLayoutId === layout.id ? 'scale-[1.02] z-10 ring-4 ring-primary/20' : 'hover:shadow-xl opacity-90 hover:opacity-100'"
+          >
+            <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-inner font-black border border-slate-200 dark:border-slate-700" :style="{ color: 'var(--app-text)' }">
+               {{ layout.cols }}x{{ layout.rows }}
+            </div>
+            <div class="text-left flex-1">
+               <h3 class="text-lg md:text-xl font-black tracking-tight" :style="{ color: 'var(--app-text)' }">{{ layout.name }}</h3>
+               <p class="text-[10px] md:text-xs font-bold opacity-60 mt-0.5 leading-tight" :style="{ color: 'var(--app-text-muted)' }">{{ layout.description }}</p>
+            </div>
+            <CheckCircle2 v-if="currentLayoutId === layout.id" class="ml-2 w-8 h-8 text-primary shrink-0" />
+          </div>
         </div>
-      </div>
+
+        <!-- TAB 2: CUSTOM BUILDER -->
+        <div v-else class="w-full max-w-4xl mx-auto p-6 md:p-10 rounded-[32px] md:rounded-[40px] shadow-2xl relative group/builder border border-white/20"
+          :style="{ backgroundColor: 'var(--card-bg)', backdropFilter: 'blur(40px)' }"
+        >
+          <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover/builder:opacity-100 transition-opacity duration-1000 -z-10 rounded-[40px]"></div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center">
+             <!-- Sliders -->
+             <div class="space-y-8 md:space-y-10">
+                <div class="space-y-3">
+                   <div class="flex justify-between items-end">
+                      <label class="text-[10px] md:text-xs font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Kolom (Kanan-Kiri)</label>
+                      <span class="text-4xl md:text-5xl font-black text-primary">{{ store.config.cols }}</span>
+                   </div>
+                   <input 
+                     type="range" min="1" max="8" step="1" 
+                     v-model.number="store.config.cols"
+                     @input="store.config.layout = 'custom'"
+                     class="w-full h-4 rounded-lg appearance-none cursor-pointer accent-primary border border-slate-200" 
+                     :style="{ backgroundColor: 'var(--sub-bg)' }"
+                   />
+                </div>
+
+                <div class="space-y-3">
+                   <div class="flex justify-between items-end">
+                      <label class="text-[10px] md:text-xs font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Baris (Atas-Bawah)</label>
+                      <span class="text-4xl md:text-5xl font-black text-secondary">{{ store.config.rows }}</span>
+                   </div>
+                   <input 
+                     type="range" min="1" max="8" step="1" 
+                     v-model.number="store.config.rows"
+                     @input="store.config.layout = 'custom'"
+                     class="w-full h-4 rounded-lg appearance-none cursor-pointer accent-secondary border border-slate-200" 
+                     :style="{ backgroundColor: 'var(--sub-bg)' }"
+                   />
+                </div>
+
+                <div class="p-5 rounded-2xl border-2 flex flex-col gap-2" :style="{ backgroundColor: 'var(--sub-bg)', borderColor: 'var(--primary)' }">
+                   <div class="flex justify-between items-center">
+                      <span class="text-sm font-black uppercase tracking-widest" :style="{ color: 'var(--app-text)' }">Total Sesi Foto</span>
+                      <span class="px-3 py-1 bg-primary text-white rounded-xl text-xs font-black tracking-widest shadow-md">{{ totalPhotosSelection }} KALI</span>
+                   </div>
+                   <p class="text-xs font-bold italic" :style="{ color: 'var(--app-text-muted)' }">"Geser slider untuk menciptakan kerangka yang paling unik dan sesuai kreasi kamu."</p>
+                </div>
+             </div>
+
+             <!-- Blueprint Preview -->
+             <div class="flex flex-col items-center gap-5">
+                <span class="text-[10px] md:text-xs font-black uppercase tracking-[0.4em]" :style="{ color: 'var(--app-text-muted)' }">Blueprint Preview</span>
+                 <div 
+                   class="w-full aspect-square rounded-[32px] p-6 shadow-inner border-[3px] flex items-center justify-center transition-all overflow-hidden"
+                   :style="{ backgroundColor: 'var(--sub-bg)', borderColor: 'var(--ui-muted)' }"
+                 >
+                   <div class="w-full h-full flex items-center justify-center p-2">
+                     <div 
+                       class="grid gap-2 transition-all duration-700 max-w-full max-h-full"
+                       :style="{ 
+                          gridTemplateColumns: `repeat(${store.config.cols}, 1fr)`,
+                          gridTemplateRows: `repeat(${store.config.rows}, 1fr)`,
+                          width: (store.config.cols * store.cellWidth) > (store.config.rows * store.cellHeight) ? '100%' : 'auto',
+                          height: (store.config.rows * store.cellHeight) >= (store.config.cols * store.cellWidth) ? '100%' : 'auto',
+                          aspectRatio: `${store.config.cols * store.cellWidth} / ${store.config.rows * store.cellHeight}`,
+                          borderRadius: '16px'
+                       }"
+                     >
+                        <div 
+                          v-for="i in Math.min(totalPhotosSelection, 64)" :key="i"
+                          class="bg-slate-900 shadow-md border-2 border-primary/40 rounded-lg relative animate-in zoom-in duration-300 hover:scale-105 transition-transform"
+                          :style="{ aspectRatio: `${store.cellWidth} / ${store.cellHeight}` }"
+                        >
+                           <div class="absolute inset-0 flex items-center justify-center opacity-20">
+                              <div class="w-2 h-2 rounded-full bg-white"></div>
+                           </div>
+                        </div>
+                     </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+}
+</style>
