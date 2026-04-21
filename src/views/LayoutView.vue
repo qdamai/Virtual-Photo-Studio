@@ -109,6 +109,26 @@ const activeTab = ref(store.config.layout === 'custom' ? 'custom' : 'preset')
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center">
              <!-- Sliders -->
              <div class="space-y-8 md:space-y-10">
+                <!-- Aspect Ratio Selector -->
+                <div class="space-y-3">
+                   <label class="text-[10px] md:text-xs font-black uppercase tracking-widest block" :style="{ color: 'var(--app-text-muted)' }">Ukuran Kamera (Aspect Ratio)</label>
+                   <div class="grid grid-cols-4 gap-2">
+                     <button 
+                       v-for="ratio in ['1:1', '4:5', '9:16', '16:9']" 
+                       :key="ratio"
+                       @click="store.config.size = ratio"
+                       class="py-2.5 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all border-2"
+                       :class="store.config.size === ratio ? 'border-primary bg-primary/10 text-primary shadow-sm scale-105' : 'border-transparent bg-slate-100 dark:bg-white/5 opacity-60 hover:opacity-100'"
+                       :style="store.config.size === ratio ? { borderColor: 'var(--primary)', color: 'var(--primary)' } : { color: 'var(--app-text-muted)' }"
+                     >
+                       {{ ratio }}
+                     </button>
+                   </div>
+                   <p class="text-[9px] md:text-[10px] font-semibold italic mt-1" :style="{ color: 'var(--app-text-muted)' }">
+                     *Pilih rasio untuk mensinkronkan bentuk kamera & bingkai.
+                   </p>
+                </div>
+
                 <div class="space-y-3">
                    <div class="flex justify-between items-end">
                       <label class="text-[10px] md:text-xs font-black uppercase tracking-widest" :style="{ color: 'var(--app-text-muted)' }">Kolom (Kanan-Kiri)</label>
