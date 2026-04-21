@@ -93,11 +93,11 @@ function handleRetry() {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-10">
+  <div class="w-full flex flex-col items-center gap-6 pt-2">
     <!-- Success Badge -->
-    <div class="flex flex-col items-center gap-6 text-center">
-       <div class="w-20 h-20 bg-green-500 text-white rounded-[32px] flex items-center justify-center shadow-2xl shadow-green-500/20 transform hover:scale-110 transition-transform">
-          <CheckCircle2 class="w-10 h-10" />
+    <div class="flex flex-col items-center gap-3 text-center">
+       <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center shadow-sm border border-green-200">
+          <CheckCircle2 class="w-6 h-6" />
        </div>
        <div class="space-y-3">
           <h2 class="text-3xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none">Berhasil!</h2>
@@ -106,7 +106,7 @@ function handleRetry() {
     </div>
 
     <!-- Centered Layout for Desktop -->
-    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-12 lg:gap-16 pt-4 md:pt-8 pb-8 md:pb-12">
+    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-6 pt-2 pb-6">
       
       <!-- Final Image Result -->
       <div class="relative group/final shrink-0 flex items-center justify-center">
@@ -121,26 +121,26 @@ function handleRetry() {
       </div>
 
       <!-- Interaction Panel -->
-      <div class="flex flex-col gap-6 w-full max-w-xs md:max-w-sm shrink-0">
+      <div class="flex flex-col gap-4 w-full max-w-xs md:max-w-sm shrink-0">
           <!-- Download Card -->
-          <div class="bg-white p-5 md:p-8 lg:p-10 rounded-[36px] md:rounded-[48px] shadow-2xl border-4 border-slate-50 flex flex-col gap-5 md:gap-8 relative overflow-hidden group/actions transition-all hover:-translate-y-2">
+          <div class="bg-white p-4 md:p-6 rounded-2xl shadow-xl border border-slate-100 flex flex-col gap-4 relative overflow-hidden group/actions transition-all hover:-translate-y-1">
              <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full z-0 group-hover/actions:scale-150 transition-transform"></div>
              
-             <div class="flex flex-col gap-4 relative z-10">
+             <div class="flex flex-col gap-3 relative z-10">
                 <button 
                   @click="downloadImage"
-                  class="group w-full flex items-center justify-between px-8 py-5 bg-slate-900 text-white rounded-[24px] font-black text-lg transition-all hover:bg-primary active:scale-95 shadow-2xl shadow-slate-900/20 overflow-hidden relative"
+                  class="group w-full flex items-center justify-between px-6 py-3.5 bg-slate-900 text-white rounded-xl font-black text-sm transition-all hover:bg-primary active:scale-95 shadow-lg overflow-hidden relative"
                 >
-                   <span class="relative z-10 text-sm tracking-widest uppercase">Simpan ke HP</span>
+                   <span class="relative z-10 text-[11px] tracking-widest uppercase">Simpan ke HP</span>
                    <Download class="w-6 h-6 group-hover:translate-y-1 transition-transform relative z-10" />
                 </button>
              </div>
 
              <!-- Sharing & Actions -->
-             <div class="flex flex-col items-center gap-6 relative z-10 pt-6 border-t-2 border-slate-50">
+             <div class="flex flex-col items-center gap-4 relative z-10 pt-4 border-t border-slate-100">
                 <button 
                   @click="shareImage"
-                  class="group w-full flex items-center justify-center gap-3 px-8 py-4 bg-secondary text-white rounded-[24px] font-black text-xs uppercase tracking-widest transition-all hover:bg-slate-900 active:scale-95 shadow-xl shadow-secondary/20 relative overflow-hidden"
+                  class="group w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-secondary text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-slate-900 active:scale-95 shadow-lg shadow-secondary/20 relative overflow-hidden"
                 >
                    <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-full transition-all duration-700 skew-x-[-20deg]"></div>
                    <Share2 class="w-4 h-4 animate-pulse" />
