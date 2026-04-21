@@ -25,9 +25,13 @@ const countdown = ref(0)
 const capturedImages = ref([])
 const facingMode = ref('user')
 
+const cameraError = ref(null)
+
 async function toggleFacingMode() {
   facingMode.value = facingMode.value === 'user' ? 'environment' : 'user'
   stopCamera()
+  isCameraReady.value = false
+  await new Promise(resolve => setTimeout(resolve, 300))
   await startCamera()
 }
 
@@ -43,23 +47,42 @@ onUnmounted(() => {
   stopCamera()
 })
 
-async function startCamera() {
+async function startCamera(retryCount = 0) {
+  cameraError.value = null
   try {
     const constraints = {
-      video: {
+      video: retryCount === 0 ? {
         width: { ideal: 1280 },
         height: { ideal: 720 },
         facingMode: facingMode.value
-      }
+      } : true
     }
     stream.value = await navigator.mediaDevices.getUserMedia(constraints)
     if (videoRef.value) {
       videoRef.value.srcObject = stream.value
+      
+      // Ensure video is playing before marking as ready
+      await new Promise((resolve) => {
+         videoRef.value.onloadedmetadata = () => {
+             videoRef.value.play().then(resolve).catch(resolve)
+         }
+         // Fallback just in case event doesn't fire
+         setTimeout(resolve, 1000)
+      })
       isCameraReady.value = true
     }
   } catch (err) {
-    console.error('Error starting camera:', err)
-    emit('error', 'Could not access camera')
+    console.error(`Error starting camera (Attempt ${retryCount}):`, err)
+    
+    // Strict constraints or device lock might fail. Retry basic.
+    if (retryCount === 0) {
+       console.log("Retrying with basic constraints...")
+       await new Promise(r => setTimeout(r, 500))
+       return startCamera(1)
+    }
+
+    cameraError.value = err.name || err.message || 'Unknown'
+    emit('error', cameraError.value)
   }
 }
 
@@ -225,8 +248,18 @@ const cameraHeight = computed(() => 375 / targetAspect.value)
       <div class="w-16 h-16 bg-white/80 rounded-full flex items-center justify-center shadow-lg animate-bounce mb-4 border-2 border-slate-50">
         <Camera class="w-8 h-8 text-primary" />
       </div>
-      <span class="text-sm font-black uppercase tracking-widest text-slate-500">Initializing Booth...</span>
-      <p class="text-[10px] text-slate-400 font-bold mt-2 px-8 text-center">Please allow camera access in your browser</p>
+      <span class="text-sm font-black uppercase tracking-widest text-slate-500">
+         {{ cameraError ? 'Kamera Bermasalah' : 'Memulai Studio...' }}
+      </span>
+      <p v-if="!cameraError" class="text-[10px] text-slate-400 font-bold mt-2 px-8 text-center border bg-white/50 backdrop-blur pb-2 pt-2 rounded-xl border-slate-200">Mohon izinkan akses kamera pada browser Anda.</p>
+      <div v-else class="flex flex-col items-center gap-3 mt-4 px-8 text-center bg-white/70 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-red-100">
+         <p class="text-xs text-red-500 font-bold">
+            {{ cameraError === 'NotReadableError' ? 'Kamera sedang digunakan aplikasi/tab lain.' : 'Gagal mengakses kamera (' + cameraError + ')' }}
+         </p>
+         <button @click="startCamera(0)" class="px-5 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-slate-800 active:scale-95 transition-all shadow-md">
+            Coba Lagi
+         </button>
+      </div>
     </div>
 
     <!-- Countdown Overlay (Corner HUD) -->
