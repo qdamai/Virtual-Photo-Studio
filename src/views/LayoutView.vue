@@ -170,19 +170,23 @@ const activeTab = ref(store.config.layout === 'custom' ? 'custom' : 'preset')
              <div class="flex flex-col items-center gap-5">
                 <span class="text-[10px] md:text-xs font-black uppercase tracking-[0.4em]" :style="{ color: 'var(--app-text-muted)' }">Blueprint Preview</span>
                  <div 
-                   class="w-full aspect-square rounded-[32px] p-6 shadow-inner border-[3px] flex items-center justify-center transition-all overflow-hidden"
-                   :style="{ backgroundColor: 'var(--sub-bg)', borderColor: 'var(--ui-muted)' }"
+                   class="rounded-[32px] p-3 md:p-5 shadow-inner border-[3px] flex items-center justify-center transition-all overflow-hidden mx-auto duration-700"
+                   :style="{ 
+                      backgroundColor: 'var(--sub-bg)', 
+                      borderColor: 'var(--primary)',
+                      aspectRatio: `${store.config.cols * store.cellWidth} / ${store.config.rows * store.cellHeight}`,
+                      width: (store.config.cols * store.cellWidth) >= (store.config.rows * store.cellHeight) ? '100%' : 'auto',
+                      height: (store.config.cols * store.cellWidth) < (store.config.rows * store.cellHeight) ? '100%' : 'auto',
+                      maxHeight: '400px',
+                      maxWidth: '100%'
+                   }"
                  >
-                   <div class="w-full h-full flex items-center justify-center p-2">
+                   <div class="w-full h-full flex items-center justify-center p-1">
                      <div 
-                       class="grid gap-2 transition-all duration-700 max-w-full max-h-full"
+                       class="grid gap-2 transition-all duration-700 w-full h-full"
                        :style="{ 
                           gridTemplateColumns: `repeat(${store.config.cols}, 1fr)`,
-                          gridTemplateRows: `repeat(${store.config.rows}, 1fr)`,
-                          width: (store.config.cols * store.cellWidth) > (store.config.rows * store.cellHeight) ? '100%' : 'auto',
-                          height: (store.config.rows * store.cellHeight) >= (store.config.cols * store.cellWidth) ? '100%' : 'auto',
-                          aspectRatio: `${store.config.cols * store.cellWidth} / ${store.config.rows * store.cellHeight}`,
-                          borderRadius: '16px'
+                          gridTemplateRows: `repeat(${store.config.rows}, 1fr)`
                        }"
                      >
                         <div 
