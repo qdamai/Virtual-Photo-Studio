@@ -165,14 +165,24 @@ const fontStyles = [
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-4 md:gap-8 max-w-7xl mx-auto px-2 md:px-4 pb-16 md:pb-20" @mousedown.self="store.config.selectedElementId = null">
-    <div class="w-full flex flex-col lg:flex-row items-center justify-center gap-5 md:gap-8 lg:gap-16 mt-2 md:mt-4">
-      <!-- Edit Panel (Uniform Grid and Tabs) -->
+  <div class="w-full max-w-7xl mx-auto px-0 lg:px-4 h-[calc(100vh-140px)] lg:h-auto overflow-hidden lg:overflow-visible" @mousedown.self="store.config.selectedElementId = null">
+    <div class="w-full flex flex-col-reverse lg:flex-row items-center justify-start lg:justify-center gap-0 lg:gap-16 lg:mt-4 h-full">
+      <!-- Edit Panel (Bottom Sheet on Mobile) -->
       <div 
-        class="flex-1 w-full max-w-xl p-4 md:p-8 rounded-[28px] md:rounded-[40px] shadow-xl border border-white/20 flex flex-col gap-4 md:gap-6 transition-all duration-500 overflow-visible"
-        :style="{ backgroundColor: 'var(--card-bg)', backdropFilter: 'blur(40px)', color: 'var(--app-text)' }"
+        class="flex-1 w-full lg:max-w-xl p-4 md:p-8 bg-[var(--card-bg)] lg:bg-transparent backdrop-blur-3xl rounded-t-[32px] lg:rounded-[40px] shadow-[0_-20px_40px_rgba(0,0,0,0.15)] lg:shadow-none border-t lg:border border-white/20 flex flex-col gap-4 md:gap-6 transition-all duration-500 overflow-y-auto h-[45vh] lg:h-auto shrink-0 z-50 custom-scrollbar hide-scrollbar"
+        :style="{ color: 'var(--app-text)', backgroundColor: 'var(--card-bg)' }"
         @mousedown.stop
       >
+        <!-- Mobile Bottom Sheet Handle & Shortcut -->
+        <div class="flex justify-between items-center mb-1 lg:hidden">
+           <span class="text-[10px] font-black uppercase tracking-widest bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full">Editor</span>
+           <button @click="$router.push({ name: 'preview' })" class="px-4 py-2 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg hover:scale-105 transition-all">Lanjut</button>
+        </div>
+        
+        <!-- Desktop Shortcut -->
+        <div class="hidden lg:flex justify-end w-full mb-0">
+           <button @click="$router.push({ name: 'preview' })" class="px-6 py-3 bg-primary text-white text-[12px] font-black uppercase tracking-widest rounded-2xl shadow-lg hover:scale-105 transition-all">Lanjut ke Cetak</button>
+        </div>
           <!-- 1. Custom Text (Live) -->
           <div class="space-y-4">
              <div class="relative group">
@@ -260,13 +270,13 @@ const fontStyles = [
                 </button>
               </div>
 
-              <!-- Sticker Grid -->
-              <div class="grid grid-cols-4 gap-3 p-4 rounded-3xl border border-white/10 max-h-[220px] overflow-y-auto hide-scrollbar" :style="{ backgroundColor: 'var(--sub-bg)' }">
+              <!-- Sticker Gallery (Horizontal Scroll) -->
+              <div class="flex overflow-x-auto gap-3 p-4 rounded-3xl border border-white/10 hide-scrollbar" :style="{ backgroundColor: 'var(--sub-bg)' }">
                 <button 
                   v-for="sticker in stickerManifest[activeCategory]" 
                   :key="sticker"
                   @click="addImageSticker(activeCategory, sticker)"
-                  class="group w-full aspect-square rounded-2xl flex items-center justify-center hover:shadow-lg hover:scale-105 active:scale-95 transition-all overflow-hidden p-2 border border-white/5"
+                  class="group w-24 h-24 shrink-0 rounded-2xl flex items-center justify-center hover:shadow-lg hover:scale-105 active:scale-95 transition-all overflow-hidden p-2 border border-white/5"
                   :style="{ backgroundColor: 'var(--card-bg)' }"
                 >
                   <img 
@@ -278,12 +288,12 @@ const fontStyles = [
             </div>
 
             <!-- Icons (Lucide) Tab Content -->
-            <div v-else-if="activeMainType === 'icons' || activeMainType === 'elements'" class="grid grid-cols-5 gap-3 max-h-[300px] overflow-y-auto hide-scrollbar p-4 rounded-[32px]" :style="{ backgroundColor: 'var(--sub-bg)' }">
+            <div v-else-if="activeMainType === 'icons' || activeMainType === 'elements'" class="flex overflow-x-auto gap-3 p-4 rounded-[32px] hide-scrollbar" :style="{ backgroundColor: 'var(--sub-bg)' }">
               <button 
                 v-for="icon in lucideElements" 
                 :key="icon"
                 @click="addIconSticker(icon)"
-                class="group w-14 h-14 rounded-2xl flex items-center justify-center hover:shadow-lg hover:scale-110 active:scale-95 transition-all border border-white/10 p-4"
+                class="group w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center hover:shadow-lg hover:scale-110 active:scale-95 transition-all border border-white/10 p-4"
                 :style="{ backgroundColor: 'var(--card-bg)' }"
               >
                 <component 
@@ -295,12 +305,12 @@ const fontStyles = [
             </div>
 
             <!-- Emojis Tab Content -->
-            <div v-else class="grid grid-cols-5 gap-3 max-h-[300px] overflow-y-auto hide-scrollbar p-4 rounded-[32px]" :style="{ backgroundColor: 'var(--sub-bg)' }">
+            <div v-else class="flex overflow-x-auto gap-3 p-4 rounded-[32px] hide-scrollbar" :style="{ backgroundColor: 'var(--sub-bg)' }">
                <button 
                 v-for="emoji in cuteEmojis" 
                 :key="emoji"
                 @click="addEmojiSticker(emoji)"
-                class="group w-14 h-14 rounded-2xl flex items-center justify-center text-3xl hover:shadow-lg hover:scale-110 active:scale-95 transition-all border border-white/10"
+                class="group w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center text-3xl hover:shadow-lg hover:scale-110 active:scale-95 transition-all border border-white/10"
                 :style="{ backgroundColor: 'var(--card-bg)' }"
               >
                 <span class="group-hover:rotate-12 transition-transform">{{ emoji }}</span>
@@ -345,8 +355,8 @@ const fontStyles = [
           <!-- 4. Aesthetic Filters (Gallery) -->
           <div class="space-y-4">
              <label class="text-[10px] font-black uppercase tracking-widest opacity-40 font-display px-1">Aesthetic Filters</label>
-             <div 
-              class="grid grid-cols-5 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar p-1 rounded-3xl hide-scrollbar"
+              <div 
+               class="flex overflow-x-auto gap-4 p-3 rounded-3xl hide-scrollbar"
               :style="{ backgroundColor: 'var(--sub-bg)' }"
              >
                 <button 
@@ -374,7 +384,7 @@ const fontStyles = [
                   ]" 
                   :key="f.id"
                   @click="store.config.filter = f.id"
-                  class="flex flex-col items-center gap-1.5 group/f"
+                  class="flex flex-col items-center gap-1.5 group/f shrink-0"
                 >
                   <div 
                     class="w-10 h-10 rounded-xl flex items-center justify-center text-lg border-2 transition-all shadow-sm"
@@ -390,12 +400,12 @@ const fontStyles = [
           <!-- 5. Typography Selection -->
           <div class="space-y-4">
              <label class="text-[10px] font-black uppercase tracking-widest opacity-40 font-display px-1">Typography</label>
-             <div class="grid grid-cols-3 gap-3">
+              <div class="flex overflow-x-auto gap-3 pb-2 hide-scrollbar">
                 <button 
                   v-for="font in fontStyles" 
                   :key="font.id"
                   @click="selectFont(font.id)"
-                  class="h-14 rounded-2xl border-2 transition-all flex items-center justify-center font-black relative overflow-hidden group"
+                  class="w-28 shrink-0 h-14 rounded-2xl border-2 transition-all flex items-center justify-center font-black relative overflow-hidden group"
                   :style="{ backgroundColor: store.config.fontStyle === font.id ? 'var(--card-bg)' : 'var(--sub-bg)', borderColor: store.config.fontStyle === font.id ? 'var(--primary)' : 'transparent' }"
                   :class="[font.class, store.config.fontStyle === font.id ? 'text-primary shadow-inner' : 'opacity-40']"
                 >
@@ -424,9 +434,9 @@ const fontStyles = [
 
       <!-- Preview Section -->
       <div 
-         class="relative flex items-center justify-center shrink-0 w-full lg:sticky lg:top-8 h-fit lg:w-fit p-4 md:p-8 lg:p-12 rounded-[40px] md:rounded-[64px] border-4 border-white/20 shadow-sm transition-colors duration-500 overflow-hidden"
+         class="relative flex-1 flex items-start lg:items-center justify-center shrink-0 w-full h-full lg:h-fit lg:w-fit p-4 pt-8 md:p-8 lg:p-12 lg:rounded-[64px] pb-10 border-0 lg:border-4 border-white/20 shadow-sm transition-colors duration-500 overflow-hidden lg:sticky lg:top-8 z-10 bg-[var(--card-bg)]"
         :style="{ 
-          backgroundColor: 'var(--card-bg)',
+          backgroundColor: 'var(--card-bg)', 
           backdropFilter: 'blur(20px)'
         }"
       >

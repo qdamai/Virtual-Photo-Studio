@@ -50,8 +50,7 @@ const currentStepIndex = computed(() => {
     />
 
     <!-- Header / Logo -->
-    <!-- Header / Logo -->
-    <header class="fixed top-0 left-0 w-full px-4 py-3 md:px-6 md:py-5 flex flex-row justify-between items-center z-50 border-b border-black/5 dark:border-white/10 bg-white/50 dark:bg-black/20 backdrop-blur-xl">
+    <header class="fixed top-0 left-0 w-full px-5 py-4 md:px-8 md:py-6 flex flex-row justify-between items-center z-50 bg-transparent">
       <!-- Logo Container -->
       <div 
         class="flex items-center gap-3 cursor-pointer group shrink-0"
@@ -71,30 +70,30 @@ const currentStepIndex = computed(() => {
         <!-- Compact Controls Container -->
         <div class="flex items-center gap-2">
           <!-- Language Switcher -->
-          <div class="flex gap-1 p-1 bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+          <div class="flex gap-1 shadow-sm bg-transparent">
              <button 
                v-for="lang in ['id', 'en']" 
                :key="lang"
                @click="store.locale = lang"
-               class="w-6 h-6 md:w-8 md:h-8 rounded-lg text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center shrink-0"
-               :class="store.locale === lang ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-md' : 'text-slate-500 opacity-60 hover:opacity-100'"
+               class="w-6 h-6 md:w-7 md:h-7 rounded-full text-[9px] md:text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center shrink-0 border border-white/20 hover:scale-110"
+               :class="store.locale === lang ? 'bg-primary text-white shadow-md' : 'text-slate-500 opacity-60 bg-transparent'"
              >
                {{ lang }}
              </button>
           </div>
 
           <!-- Theme Switcher -->
-          <div class="flex gap-1 p-1 bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+          <div class="flex gap-1 shadow-sm bg-transparent">
              <button 
                v-for="[theme, icon] in [['playful', 'sparkles'], ['light', 'sun'], ['dark', 'moon']]"
                :key="theme"
                @click="store.appTheme = theme"
-               class="w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300 active:scale-90"
-               :class="store.appTheme === theme ? 'bg-primary text-white shadow-md' : 'text-slate-400 opacity-60 hover:opacity-100'"
+               class="w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 active:scale-90 border border-white/20 hover:scale-110"
+               :class="store.appTheme === theme ? 'bg-primary text-white shadow-md' : 'text-slate-500 opacity-60 bg-transparent'"
              >
-               <Sparkles v-if="theme === 'playful'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
-               <Sun      v-else-if="theme === 'light'" class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-12': store.appTheme === 'light' }" />
-               <Moon     v-else                        class="w-3.5 h-3.5 md:w-4 md:h-4" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
+               <Sparkles v-if="theme === 'playful'" class="w-3 h-3 md:w-3.5 md:h-3.5" :class="{ 'animate-pulse': store.appTheme === 'playful' }" />
+               <Sun      v-else-if="theme === 'light'" class="w-3 h-3 md:w-3.5 md:h-3.5" :class="{ 'rotate-12': store.appTheme === 'light' }" />
+               <Moon     v-else                        class="w-3 h-3 md:w-3.5 md:h-3.5" :class="{ 'rotate-[-12deg]': store.appTheme === 'dark' }" />
              </button>
           </div>
         </div>
