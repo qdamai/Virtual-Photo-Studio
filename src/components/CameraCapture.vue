@@ -127,6 +127,58 @@ async function takePhoto() {
       countdown.value--
     }
     
+    // ==========================================
+    // HARDWARE FLASH (TORCH) DETECTION & TRIGGER
+    // ==========================================
+    let track = null
+    let torchSupported = false
+
+    if (stream.value && isFlashEnabled.value) {
+      const tracks = stream.value.getVideoTracks()
+      if (tracks.length > 0) {
+        track = tracks[0]
+        if (track.getCapabilities) {
+          try {
+            const caps = track.getCapabilities()
+            torchSupported = !!caps.torch
+          } catch(e) {}
+        }
+      }
+    }
+
+    if (torchSupported) {
+      try {
+        await track.applyConstraints({ advanced: [{ torch: true }] })
+        // Wait 250ms for camera hardware auto-exposure to adjust to the new intense light
+        await new Promise(r => setTimeout(r, 250))
+      } catch (err) {
+        // Fallback safely if applyConstraints is rejected by the OS
+        torchSupported = false
+      }
+    }
+
+    // ==========================================
+    // VISUAL FLASH FALLBACK (ESTHETIC KEYFRAMES)
+    // ==========================================
+    if (isFlashEnabled.value && !torchSupported) {
+      const flash = document.createElement('div')
+      flash.className = 'fixed inset-0 bg-white z-[9999] pointer-events-none'
+      document.body.appendChild(flash)
+      
+      // Native Web Animations API (WAAPI)
+      // "meledak di awal (putih solid) dan memudar perlahan selama 1.8 detik menggunakan ease-out"
+      flash.animate([
+        { opacity: 1 },
+        { opacity: 1, offset: 0.1 }, // Hold solid white for the first 10% (180ms)
+        { opacity: 0 }
+      ], {
+        duration: 1800,
+        easing: 'ease-out',
+        fill: 'forwards'
+      })
+      setTimeout(() => flash.remove(), 1800)
+    }
+
     // Play Shutter Sound
     playBeep('shutter')
     
@@ -180,19 +232,11 @@ async function takePhoto() {
     capturedImages.value.push(dataUrl)
     emit('captured', dataUrl)
     
-    // High-Intensity Flash Feedback (Super Strobe with Sustain)
-    if (isFlashEnabled.value) {
-      const flash = document.createElement('div')
-      flash.className = 'fixed inset-0 bg-white z-[9999] pointer-events-none transition-opacity'
-      flash.style.opacity = '1'
-      document.body.appendChild(flash)
-      
-      // Sustain at 100% for longer (200ms) before fading
-      setTimeout(() => {
-        flash.style.transition = 'opacity 800ms cubic-bezier(0.23, 1, 0.32, 1)' 
-        flash.style.opacity = '0'
-        setTimeout(() => flash.remove(), 800)
-      }, 200)
+    // Turn off Hardware torch if active
+    if (torchSupported && track) {
+      try {
+        track.applyConstraints({ advanced: [{ torch: false }] })
+      } catch (e) {}
     }
     
     if (i < props.targetPhotos - 1) {
