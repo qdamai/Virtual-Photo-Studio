@@ -156,32 +156,19 @@ function applyPixelFilter(imageData, filterName) {
   return imageData
 }
 
-// Draw a photo with pixel-level filter applied — guaranteed cross-browser.
+// Draw a photo with standard Canvas API filters applied
 async function drawPhotoWithFilter(mainCtx, img, sx, sy, sw, sh, dx, dy, dw, dh, filterName) {
-  // 1. Draw cropped photo to offscreen canvas
-  const off = document.createElement('canvas')
-  off.width = dw
-  off.height = dh
-  const offCtx = off.getContext('2d')
-  offCtx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh)
-
-  // 2. Apply pixel filter if needed
-  if (filterName && filterName !== 'none') {
-    try {
-      const imageData = offCtx.getImageData(0, 0, dw, dh)
-      applyPixelFilter(imageData, filterName)
-      offCtx.putImageData(imageData, 0, 0)
-    } catch (e) {
-      console.warn('Pixel filter failed, drawing unfiltered:', e)
-    }
-  }
-
-  // 3. Draw filtered result to main canvas
   mainCtx.save()
   mainCtx.beginPath()
   mainCtx.rect(dx, dy, dw, dh)
   mainCtx.clip()
-  mainCtx.drawImage(off, dx, dy)
+
+  if (filterName && filterName !== 'none') {
+    mainCtx.filter = getFilterStyle(filterName)
+  }
+
+  // Native Canvas 2D API handles filters incredibly fast and natively on modern mobile and desktop browsers
+  mainCtx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
   mainCtx.restore()
 }
 
@@ -537,15 +524,24 @@ async function generateFinal() {
 function getFilterStyle(filter) {
   const filters = {
     vintage: 'sepia(0.5) contrast(1.1) brightness(0.9) saturate(0.8)',
-    retro: 'sepia(0.3) saturate(1.4) contrast(1.2)',
+    retro: 'sepia(0.3) saturate(1.4) contrast(1.2) hue-rotate(-10deg)',
     mono: 'grayscale(1) contrast(1.2) brightness(1.1)',
     sepia: 'sepia(0.8) contrast(1.05)',
     warm: 'saturate(1.3) sepia(0.2) brightness(1.05)',
     cool: 'hue-rotate(30deg) saturate(1.1) brightness(1.05)',
     bright: 'brightness(1.25) contrast(1.05) saturate(1.1)',
-    matte: 'contrast(0.85) brightness(1.1) saturate(0.9)',
-    pastel: 'brightness(1.15) saturate(0.7) contrast(0.9)',
-    cinematic: 'contrast(1.3) saturate(0.8) brightness(0.9)',
+    soft: 'blur(0.5px) brightness(1.1) contrast(0.95) saturate(0.9)',
+    matte: 'contrast(0.85) brightness(1.1) saturate(0.9) sepia(0.1)',
+    pastel: 'brightness(1.15) saturate(0.7) contrast(0.9) hue-rotate(10deg)',
+    peachy: 'sepia(0.2) hue-rotate(-20deg) saturate(1.5) brightness(1.1)',
+    golden: 'sepia(0.4) saturate(1.6) brightness(1.1) contrast(1.1)',
+    sunset: 'sepia(0.5) hue-rotate(-30deg) saturate(1.8) brightness(1.05)',
+    cinematic: 'contrast(1.3) saturate(0.8) brightness(0.9) hue-rotate(-5deg)',
+    dreamy: 'blur(1px) brightness(1.2) saturate(1.2) opacity(0.9)',
+    grainy: 'contrast(1.1) saturate(1.1)',
+    fade: 'brightness(1.1) contrast(0.9) saturate(0.7) sepia(0.2)',
+    'cool-blue': 'hue-rotate(180deg) saturate(1.2) contrast(1.1) brightness(1.1)',
+    'high-contrast': 'contrast(1.6) saturate(1.2) brightness(1.05)'
   }
   return filters[filter] || 'none'
 }
