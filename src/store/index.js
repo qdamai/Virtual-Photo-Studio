@@ -125,15 +125,27 @@ export const usePhotoboothStore = defineStore('photobooth', () => {
   }
 
   const cellWidth = computed(() => {
-    if (config.size === 'landscape') return 400
-    if (config.size === 'square') return 300
-    return 300
+    switch (config.size) {
+      case '1:1': return 400
+      case '4:5': return 320
+      case '9:16': return 360
+      case '16:9': return 640
+      case 'landscape': return 400
+      case 'square': return 300
+      default: return 300 // strip / portrait
+    }
   })
 
   const cellHeight = computed(() => {
-    if (config.size === 'landscape') return 300
-    if (config.size === 'square') return 300
-    return 400
+    switch (config.size) {
+      case '1:1': return 400
+      case '4:5': return 400
+      case '9:16': return 640
+      case '16:9': return 360
+      case 'landscape': return 300
+      case 'square': return 300
+      default: return 400 // strip / portrait
+    }
   })
 
   return {

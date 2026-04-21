@@ -14,6 +14,10 @@ const layouts = [
   { id: 'strip3', name: 'Iconic Strip', size: 'strip', layout: 'vertical3', cols: 1, rows: 3, description: 'Classic 3-photo vertical strap', aspectClass: 'aspect-[1/3] h-48' },
   { id: 'portrait2', name: 'Portrait Duo', size: 'portrait', layout: 'vertical2', cols: 1, rows: 2, description: 'Clean 2-frame vertical story', aspectClass: 'aspect-[3/5] h-40' },
   { id: 'grid4', name: 'Insta Grid', size: 'square', layout: 'grid4', cols: 2, rows: 2, description: 'Popular 2x2 grid (4 photos)', aspectClass: 'aspect-square w-32' },
+  { id: 'single_1_1', name: 'Square 1:1', size: '1:1', layout: 'single', cols: 1, rows: 1, description: 'Sempurna untuk Feeds Instagram', aspectClass: 'aspect-square w-32' },
+  { id: 'single_4_5', name: 'Portrait 4:5', size: '4:5', layout: 'single', cols: 1, rows: 1, description: 'Format foto ideal estetika', aspectClass: 'aspect-[4/5] w-32' },
+  { id: 'single_9_16', name: 'Story 9:16', size: '9:16', layout: 'single', cols: 1, rows: 1, description: 'Resolusi Instastory / Tiktok', aspectClass: 'aspect-[9/16] w-32' },
+  { id: 'single_16_9', name: 'Wide 16:9', size: '16:9', layout: 'single', cols: 1, rows: 1, description: 'Format kamera layar memanjang', aspectClass: 'aspect-[16/9] w-32' },
 ]
 
 function selectLayout(layout) {
